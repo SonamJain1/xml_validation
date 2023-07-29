@@ -1,0 +1,138 @@
+template header
+ruleType
+ruleId
+name
+version
+ruleCategory
+ruleSubcategory
+evaluationRule
+applicationId
+commandCode
+maxVelocity
+crossProtocolCheckEnabled
+crossProtocolCheckPertinenceRuleFlowGroup
+actionId
+ruleFlowGroup
+salience
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+import com.evolvedintelligence.engine.sigfirewall.datamodel.util.CrossProtocolVelocityCheck;
+
+import java.util.Objects;
+
+template "diameter_category_3.2_rule"
+
+rule "DiameterCategory3_2_Rule_CrossProtocolCheckPertinence(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{crossProtocolCheckPertinenceRuleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message (Note the rule is only applicable to requests)
+        DiameterMessage( isRequest() == true,
+                         applicationId == @{applicationId},
+                         commandCode == @{commandCode},
+                         $originRealm : originRealm != null,
+                         $tenant : tenant != null,
+                         $sub : subscriber != null,
+                         tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true )
+
+        // Cross Protocol Check Required Flag
+        $crossProtocolCheck : CrossProtocolVelocityCheck()
+
+        // We attempt to perform a cross protocol velocity check if:
+        //
+        //   1, The subscriber store is currently active
+        //
+        //   2, Cross Protocol velocity check is enabled
+        //
+        //   3, The IMSI of the subscriber is known
+        //
+        //   4, Subscriber as identified by the IMSI is a Tenant subscriber
+        //
+        //   5, The originating realm resolves to a known operator
+        //
+        //   6, The current subscriber location is unknown or is a different country
+        //      that that associated with the realm operator
+
+        eval ( $sub.getSubscriberStoreActive()
+               && @{crossProtocolCheckEnabled}
+               && $sub.getImsi() != null
+               && $tenant.isTenantSubscriber($sub.getImsi())
+               && $originRealm.operatorPresent() )
+
+        eval ( ! $sub.currentOperatorKnown()
+               || ( !Objects.equals(
+                              $sub.getCurrentOperator().getIsoCountryCode(),
+                              $originRealm.getOperator().getIsoCountryCode() ) ) )
+
+    then
+        // Only record the need for a cross protocol check if the message is not already explicitly blocked
+        if ( ! $results.getIsExplicitlyBlocked() )
+        {
+            $crossProtocolCheck.setEnabled("@{ruleId}", true);
+        }
+    end
+
+
+rule "DiameterCategory3_2_Rule_(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message (Note the rule is only applicable to requests)
+        DiameterMessage( isRequest() == true,
+                         applicationId == @{applicationId},
+                         commandCode == @{commandCode},
+                         isRequest() == true,
+                         $originRealm : originRealm != null,
+                         $tenant : tenant != null,
+                         $sub : subscriber != null,
+                         tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true )
+
+        // Cross Protocol Check Required Flag
+        $crossProtocolCheck : CrossProtocolVelocityCheck()
+
+        // Only execute the rule if we have a current connection to an active subscriber store
+        eval ( $sub.getSubscriberStoreActive() )
+
+        // Rule fails if:
+        //
+        //   1, The IMSI of the subscriber is known
+        //
+        //   2, Subscriber as identified by the IMSI is not a Tenant subscriber
+        //
+        // ...or...
+        //
+        //   3, The location of the subscriber has changed so they have travelled
+        //      faster than is nominally possible
+
+        eval ( $sub.getImsi() != null )
+
+        eval ( (!$tenant.isTenantSubscriber($sub.getImsi())) ||
+               (!$tenant.velocityValid($sub, $originRealm.getOperator(), ${maxVelocity},
+                                       @{crossProtocolCheckEnabled},
+                                       $crossProtocolCheck.getOperator(),
+                                       $crossProtocolCheck.getTimestamp() )) )
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( ! $results.getIsExplicitlyBlocked() )
+        {
+            modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                      "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule}) };
+        }
+    end
+
+end template

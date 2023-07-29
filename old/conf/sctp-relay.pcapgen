@@ -1,0 +1,9 @@
+###################
+# PCAP file writer
+###################
+
+# Defaults to /opt/engine/data/blockedpcap/
+BlockedTcapMessagePcapFileDir = /opt/engine/data/blockedpcaps/
+BlockedTcapMessagePcapFileTempDir = /opt/engine/data/blockedpcapstemp/
+# Defaults to true
+GeneratePcapFileForBlockedTcapMessage = true

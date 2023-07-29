@@ -1,0 +1,49 @@
+[M3UA STACKS]
+#StackName|NodeType|SourceIPs|SCTPPort|RTOInit-ms|RTOMin-ms|RTOMax-ms|HearbeatEnabled|HeartbeatDuration-ms
+m3ua_0|ASP|10.7.3.65|8877|3000|1000|60000|YES|5000
+
+[M3UA NETWORKS]
+#NetworkName|NetworkInd|Variant|M3UAStackName
+M3UANW1|International|ITU|m3ua_0
+
+[REMOTE SGPS]
+# HOBNOB - 10.7.3.65
+# KITKAT - 10.7.3.66
+#RemoteSGPName|M3uaStackName|NetworkName|DynamicRegistration|IP|SCTPPort|NetworkApperance|SecondaryIPs
+ITP|m3ua_0|M3UANW1|NO|10.7.3.14|8877|0|N/A
+KITKAT|m3ua_0|M3UANW1|NO|10.7.3.66|8877|0|N/A
+
+[LOCAL AS]
+#Name|M3uaStackName|AppId|NetworkName|PointCode|SSNs|RoutingContext|RemoteSGPNames
+LocalAS1|m3ua_0|tcap_0|M3UANW1|6154|1,5|3|ITP
+LocalAS2|m3ua_0|tcap_0|M3UANW1|6154|1,5|1|KITKAT
+
+[DESTINATION CONFIGURATION]
+#DESTINATION_NAME|DESTINATION_PC|DESTINATION_NI
+LINKBIT|13396|NATIONAL
+KITKAT|13397|NATIONAL
+
+[M3UA ROUTES]
+#DestinationName|M3uaStackName|RemoteSGPNames|RoutingContext|CheckDestAvailability
+LINKBIT|m3ua_0|ITP|3|YES
+KITKAT|m3ua_0|KITKAT|1|YES
+
+[SCCP PROVIDERS]
+#ProviderName|MTPStackName
+sccp_0|m3ua_0
+
+[REMOTE SSN CONFIGURATION]
+#DestinationName|SccpProviderName|SSN
+LINKBIT|sccp_0|6
+KITKAT|sccp_0|6
+
+[LOCAL SSN CONFIGURATION]
+#SccpUserId|SccpProviderName|SSN
+
+[GT TRANSLATION RULES]
+#|PrefixGT|TargetGT|KeepGT|SccpProvider
+
+[HA NODE]
+#SifServerPort|MaxSecsOOSAtStartup|MaxSecsOOSAfterINS
+16555|1000|5000
+

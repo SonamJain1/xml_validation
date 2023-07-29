@@ -1,0 +1,43 @@
+#####################
+# SNMP configuration
+#####################
+
+#SNMPName = snmpSctpRelay
+#SNMPHost = snmphost
+#SNMPCommunity = enginecommunity
+
+#SNMPVersion = 2
+
+# SNMP V3-specific fields:
+# snmpSecurityName=EI-OpenNMS-User
+
+# Set to a hex string e.g. 80001370017f000001
+# snmpEngineId=80001370017f000001
+
+# Set to the following values:
+#   NOAUTH_NOPRIV - use neither authentication nor privacy
+#   AUTH_NOPRIV   - use authentication but not privacy
+#   AUTH_PRIV     - use both authentication and privacy
+# snmpSecurityLevel=AUTH_PRIV
+
+# Set to a hex string e.g. 80001370017f000001
+# snmpContextEngineId=80001370017f000001
+
+# Set to the following values:
+#   NONE - use no authentication protocol
+#   MD5 - use md5 authentication protocol
+#   SHA - use SHA authentication protocol
+# snmpAuthProtocol=SHA
+
+# Set to the following values:
+#   NONE   - use to privacy encryption
+#   DES    - use DES privacy encryption
+#   AES128 - use AES128 privacy encryption
+#   IDEA   - use IDEA privacy encryption
+#   AES192 - use AES192 privacy encryption
+#   AES256 - use AES256 privacy encryption
+#   3DES   - use 3DES privacy encryption
+# snmpPrivProtocol=AES128
+
+# snmpAuthPassword=ONMSEI2016-auth
+# snmpPrivPassword=ONMSEI2016-priv

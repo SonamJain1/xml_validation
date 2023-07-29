@@ -1,0 +1,44 @@
+{
+  "smppConfigList": {
+    "pairConnectionMap": [
+      [
+        {
+          "sourceIpAddress": "127.0.0.1",
+          "systemId": "sysId1"
+        },
+        {
+          "sourceIpAddress": "127.0.0.1",
+          "destinationIpAddress": "127.0.0.1",
+          "destinationIPPort": 4009,
+          "localIpAddress": "127.0.0.1",
+          "localBindPort": 4005,
+          "tenant": "MARM3",
+          "esmeName": "ESME1",
+          "smscName": "SMSC1"
+        }
+      ],
+      [
+        {
+          "sourceIpAddress": "127.0.0.1",
+          "systemId": "sysId2"
+        },
+        {
+          "sourceIpAddress": "127.0.0.1",
+          "destinationIpAddress": "127.0.0.1",
+          "destinationIPPort": 4009,
+          "localIpAddress": "127.0.0.1",
+          "localBindPort": 4005,
+          "tenant": "MARM3",
+          "esmeName": "ESME1",
+          "smscName": "SMSC1"
+        }
+      ]
+    ]
+  },
+  "smppifServerPort": 4001,
+  "smppifServerIPAddr": "127.0.0.1",
+  "smppifProcessingQSize": 5000,
+  "transportRmiQueryPort": 9876,
+  "rxBufferSizeBytes": 800,
+  "rxBufferPoolSize": 1000
+}

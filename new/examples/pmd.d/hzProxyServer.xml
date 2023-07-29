@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <!-- FIXME -->
+            <var name="PXY_SRV_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+    <group name="hzproxy">
+        <processes>
+            <process name="hzproxyserver"/>
+        </processes>
+    </group>
+
+    <process name="hzproxyserver"
+             path="${PXY_SRV_BASE}/bin"
+             directory="${PXY_SRV_BASE}/bin"
+             cmd="hzproxyserver"/>
+</pmd>

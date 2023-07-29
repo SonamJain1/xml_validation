@@ -1,0 +1,31 @@
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <!-- FIXME -->
+            <var name="NW_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+    <group name="gtp" lockstep="true">
+        <processes>
+            <process name="napawatch"/>
+        </processes>
+    </group>
+
+    <process name="napawatch"
+             cmd="./napawatch"
+             directory="${NW_BASE}/bin/">
+
+        <args>../conf/napawatch.cfg</args>
+
+        <envEntry var="DLVL_napawatch" val="0"/>
+        <envEntry var="DLOG_napawatch" val="${NW_BASE}/logs/napawatch.log"/>
+        <envEntry var="LD_LIBRARY_PATH" val="/opt/napatech3/lib:${NW_BASE}/lib64"/>
+    </process>
+
+</pmd>
+

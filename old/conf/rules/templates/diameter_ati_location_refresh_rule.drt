@@ -1,0 +1,130 @@
+template header
+ruleType
+ruleId
+name
+version
+applicationId
+commandCode
+systemStartupPeriod
+maximumAgeSeconds
+actionId
+ruleFlowGroup
+salience
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRule;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.atilocationrefresh.SigFirewallDiameterAtiLocationRefreshRule;
+
+import java.util.Objects;
+
+template "diameter_ati_location_refresh_rule"
+
+rule "DiameterAtiLocationRefresh_UnknownLocation(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message (Note the rule is only applicable to requests and not those from a passive source)
+        DiameterMessage( passiveSource == false,
+                         isRequest() == true,
+                         applicationId == @{applicationId},
+                         commandCode == @{commandCode},
+                         $originRealm : originRealm != null,
+                         $tenant : tenant != null,
+                         $sub : subscriber != null,
+                         tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true )
+
+
+        // Only execute the rule if we have a current connection to an active subscriber store
+        eval ( $sub.getSubscriberStoreActive() )
+
+        // IMSI must present and for the tenant
+        eval ( ($sub.getImsi() != null) && ($tenant.isTenant($sub.getImsi())) )
+
+        // Rule is triggered if:
+        //
+        //   The current location of the subscriber is unknown and the system startup period has been ended
+
+        eval ( $sub.currentOperatorUnknownAndLocationStoreOld( @{systemStartupPeriod} ) )
+
+        // Optimise so that the an ATI is never issued when the Diameter Message is received from
+        //
+        //     1, The same country as the tenant network
+        //     2, A bordering country to the tenant network
+        //     3, A non geographic operator (or that the tenant is a non geographic operator)
+        //
+        eval ( SigFirewallDiameterAtiLocationRefreshRule.atiRequiredForUnknownCurrentLocation($tenant, $originRealm) )
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( ! $results.getIsExplicitlyBlocked() )
+        {
+            // Note that category and sub category are not supported in ATI location refresh rules
+            modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                       SigFirewallDiameterRule.NO_CATEGORY_SET,
+                                       SigFirewallDiameterRule.NO_SUB_CATEGORY_SET,
+                                       false) };
+        }
+    end
+
+rule "DiameterAtiLocationRefresh_OldLocation(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message (Note the rule is only applicable to requests and not those from a passive source)
+        DiameterMessage( passiveSource == false,
+                         isRequest() == true,
+                         applicationId == @{applicationId},
+                         commandCode == @{commandCode},
+                         $originRealm : originRealm != null,
+                         $tenant : tenant != null,
+                         $sub : subscriber != null,
+                         tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true )
+
+        // Only execute the rule if we have a current connection to an active subscriber store
+        eval ( $sub.getSubscriberStoreActive() )
+
+        // IMSI must present and for the tenant
+        eval ( ($sub.getImsi() != null) && ($tenant.isTenant($sub.getImsi())) )
+
+        // Rule is triggered if:
+        //
+        //   The current subscriber location information known but old
+        //
+        eval ( $sub.currentOperatorKnownButOld( @{maximumAgeSeconds} ) )
+
+        // Optimise so that the an ATI is never issued when the TCAP Message is received from:
+        //
+        //     1, The same country as current subscriber location
+        //     2, A bordering country to the current subscriber location
+        //     3, A non geographic operator (or that the current subscriber location is non geographic)
+        //
+        eval ( SigFirewallDiameterAtiLocationRefreshRule.atiRequiredForKnownCurrentLocation($tenant, $originRealm, $sub) )
+
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( ! $results.getIsExplicitlyBlocked() )
+        {
+            // Note that category and sub category are not supported in ATI location refresh rules
+            modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                      SigFirewallDiameterRule.NO_CATEGORY_SET,
+                                      SigFirewallDiameterRule.NO_SUB_CATEGORY_SET,
+                                      false ) };
+        }
+    end
+
+end template

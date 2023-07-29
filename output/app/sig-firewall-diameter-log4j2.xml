@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="info" shutdownHook="disable" monitorInterval="60">
+
+    <!-- Logging Properties -->
+    <Properties>
+        <Property name="SFW_DIAMETER_APP_FILE_NAME">${sys:SIG_FIREWALL_DIAMETER_BASE_DIR}/logs/signalling-firewall-diameter-${sys:SIG_FIREWALL_DIAMETER_NODE_ID}-${sys:SIG_FIREWALL_DIAMETER_INSTANCE_ID}.log</Property>
+        <Property name="STATS_FILE_NAME">${sys:SIG_FIREWALL_DIAMETER_BASE_DIR}/logs/signalling-firewall-diameter-stats-${sys:SIG_FIREWALL_DIAMETER_NODE_ID}-${sys:SIG_FIREWALL_DIAMETER_INSTANCE_ID}.log</Property>
+        <Property name="EDR_FILE_NAME">${sys:SIG_FIREWALL_DIAMETER_BASE_DIR}/logs/sig-firewall-diameter-edr-${sys:SIG_FIREWALL_DIAMETER_NODE_ID}-${sys:SIG_FIREWALL_DIAMETER_INSTANCE_ID}.log</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- ************************************************************************** -->
+        <!-- *     EDR_FILE                                                           * -->
+        <!-- *                                                                        * -->
+        <!-- *  In the case where a RabbitMQ server is being used for EDRs then this  * -->
+        <!-- *  file is used as a backup when connection to the server is lost        * -->
+        <!-- ************************************************************************** -->
+        <RollingFile name="EDR_FILE" fileName="${EDR_FILE_NAME}" filePattern="${EDR_FILE_NAME}.%d{yyyyMMdd}" append="true">
+            <PatternLayout pattern="%m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="14"/>
+        </RollingFile>
+
+        <!-- ************************************************************************** -->
+        <!-- *     STATS_FILE                                                         * -->
+        <!-- *                                                                        * -->
+        <!-- *  Firewall Allow/Discard statistics. This has now been superseded       * -->
+        <!-- *  by the statistics produced by the SIF.                                * -->
+        <!-- ************************************************************************** -->
+        <RollingFile name="STATS_FILE" fileName="${STATS_FILE_NAME}" filePattern="${STATS_FILE_NAME}.%i" append="true">
+            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss.SSS zzz},%m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="3"/>
+        </RollingFile>
+
+        <!-- ************************************************************************** -->
+        <!-- *     SFW_DIAMETER_APP_CONSOLE    -   Application Messages               * -->
+        <!-- ************************************************************************** -->
+        <Console name="SFW_DIAMETER_APP_CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss,SSS} %c{1} %p - %m%n"/>
+        </Console>
+
+        <!-- ************************************************************************** -->
+        <!-- *     SFW_DIAMETER_APP_FILE       -   Application Messages               * -->
+        <!-- ************************************************************************** -->
+        <RollingFile name="SFW_DIAMETER_APP_FILE" fileName="${SFW_DIAMETER_APP_FILE_NAME}" filePattern="${SFW_DIAMETER_APP_FILE_NAME}.%i" append="true">
+            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss,SSS} %c{1} %p - %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+
+        <!-- ************************************************************************** -->
+        <!-- *     EDR.SIG_FIREWALL_ITU_TCAP_MESSAGE                                  * -->
+        <!-- *                                                                        * -->
+        <!-- *  Signalling Firewall Allow/Discard EDRs for ITU TCAP Relay MSUs        * -->
+        <!-- ************************************************************************** -->
+        <logger name="EDR.SIG_FIREWALL_DIAMETER_MESSAGE" level="info" additivity="false">
+            <AppenderRef ref="EDR_FILE"/>
+        </logger>
+
+        <!-- ************************************************************************** -->
+        <!-- *     STATS.SIG_FIREWALL_ITU_TCAP_RELAY                                  * -->
+        <!-- *                                                                        * -->
+        <!-- *  Signalling Firewall statistics for ITU TCAP Relay MSUs                * -->
+        <!-- ************************************************************************** -->
+        <logger name="STATS.SIG_FIREWALL_DIAMETER" level="info" additivity="false">
+            <AppenderRef ref="STATS_FILE"/>
+        </logger>
+
+        <!-- Specific rule for this module -->
+        <logger name="com.evolvedintelligence.engine.sigfirewall" level="info" additivity="false">
+            <AppenderRef ref="SFW_DIAMETER_APP_FILE"/>
+        </logger>
+
+        <!-- Specific rule for this EWOK messages -->
+        <logger name="com.evolvedintelligence.engine.ewok" level="info" additivity="false">
+            <AppenderRef ref="SFW_DIAMETER_APP_FILE"/>
+        </logger>
+
+        <!-- Hazelcast -->
+        <logger name="com.hazelcast" level="info" additivity="false">
+            <AppenderRef ref="SFW_DIAMETER_APP_FILE"/>
+        </logger>
+
+        <!-- Default rule for all classes -->
+        <Root level="info">
+            <AppenderRef ref="SFW_DIAMETER_APP_FILE"/>
+        </Root>
+    </Loggers>
+</Configuration>

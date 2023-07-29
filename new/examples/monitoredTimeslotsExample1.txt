@@ -1,0 +1,21 @@
+[CARD CONFIGURATION]
+# PlaneId: 0 or 1 (only relevant when CCure is being used).  Always 0 when no CCure
+# ifId: 0 or 1 (only relevant for cards with multiple interfaces, MPAC 2416 and 5600 cards) 
+#CardId|ifId|IPAddres|Port|NumReconnAttempts|ReconnTimer|TimingRole|FirmwareFileName|SelfBoot|TrunksPerCard
+0|0|127.0.0.1|9200|500|5|A_PRIMARY_MASTER|N/A|YES|4
+
+[CARD TIMING CONFIGURATION]
+#CardId|TimingSourceType|TimingSource|Stream
+0|PRIMARY|E1|0
+0|SECONDARY|E1|4
+
+[TRUNK CONFIGURATION]
+#TrunkName|CardId|TrunkId|FramingFormat|CRCMode|LineBuildOut|LossThreshold[|MonitorMode|TxDisable]
+TRUNKA|0|0|E1_120_HDB3|CRC_OFF|0|LT_DEFAULT
+TRUNKB|0|4|E1_120_HDB3|CRC_OFF|0|LT_DEFAULT
+TRUNKC|0|3|E1_120_HDB3|CRC_OFF|0|LT_DEFAULT|YES|YES
+
+[MONITORED TIMESLOTS]
+#MonitoredGroupName|TrunkName|LinkType|LINKTXRATE|SIOFlags|Timeslots
+MonGroup1|TRUNKA|E1|64_KBS|15|1-31
+MonGroup2|TRUNKB|E1|64_KBS|15|2-24,25-30

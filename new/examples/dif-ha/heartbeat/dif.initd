@@ -1,0 +1,193 @@
+#!/bin/bash
+#
+# crond          Start/Stop the EI Diameter Interface Function (DIF)
+#
+# chkconfig: 2345 90 60
+# description: 
+#              
+#              
+#
+RETVAL=0
+
+# Full path the the script that starts the DIF
+DIF=/opt/engine/bin/start-dif.sh
+
+# Name of the application
+DIF_EXE_NAME=dif
+
+# Name and location of the DIF PID File
+DIF_PID_FILE=/var/run/dif.pid
+
+# Name and location of the DIF Halt File
+DIF_HALT_FILE=/var/run/dif.halt
+
+# DIF command port number (Default = 62345)
+DIF_COMMAND_PORT=62345
+
+priv_check() {
+    if [ $UID -ne 0 ] ; then
+        echo "User has insufficient privilege."
+        exit 4
+    fi
+}
+    
+start() {
+
+    priv_check
+
+    # Check the DIF start script exists and is executable
+    if [ ! -x $DIF ]
+    then
+       echo "$DIF_EXE_NAME start script ($DIF) does not exist or is not executable"
+       exit 5
+    fi
+
+    # Check if the DIF is already running
+    difstatus;
+    if [ $? -eq 0 ]
+    then
+       echo "$DIF_EXE_NAME already running"
+       return 1
+    fi
+
+    # Start the DIF
+    rm -f $DIF_HALT_FILE
+    echo "Starting $DIF_EXE_NAME "
+    $DIF &
+    
+    # Check that the DIF has started by attempting to connect to
+    # it command port.
+    TIMEOUT=20
+    for ((i=1; i <= TIMEOUT ; i++))
+    do
+        # Check that the DIF command port has been opened
+        echo "quit" | nc -C localhost $DIF_COMMAND_PORT > /dev/null
+        if [ $? -eq 0 ]
+        then
+            difstatus
+            echo "Started $DIF_EXE_NAME" $DIF_PID
+            return 0
+        fi
+        sleep 1
+    done
+    
+    echo "Failed to start the DIF"
+    difstop
+    return 1
+}    
+
+stop() {
+
+    priv_check
+
+    difstatus;
+    if [ $? -ne 0 ]
+    then
+        echo "$DIF_EXE_NAME is not running"
+        return 1
+    fi
+    
+    echo "Shutting down $DIF_EXE_NAME" $DIF_PID
+    difstop
+    if [ $? -eq 0 ]
+    then
+        echo "Stopped $DIF_EXE_NAME" $DIF_PID
+        return 0
+    fi
+    return 1
+}
+
+difstop() {
+
+    touch $DIF_HALT_FILE
+    kill -9 $DIF_PID
+    rm -f $DIF_PID_FILE
+   
+    i=1
+    while (($i < 20))
+    do
+        difstatus
+        if [ $? -ne 0 ]
+        then
+            diftidyup
+            return 0
+        fi
+        sleep 1
+    done   
+    diftidyup
+}
+
+diftidyup() {
+    # rm -f $DIF_HALT_FILE
+    rm -f $DIF_PID_FILE
+}
+
+difstatus() {
+
+    priv_check
+
+    # Determine if we are in verbose mode
+    verbose=0
+    if [ $# -gt 0 -a "$1" == "1" ]
+    then
+        verbose=1
+    fi
+    
+    RETVAL=1
+    
+    # Check the PID file to see if the process is running
+    if [ -r $DIF_PID_FILE ]
+    then
+    	DIF_PID=`cat $DIF_PID_FILE`
+    	if [ -n "$DIF_PID" ]
+    	then
+    	    ps -ef | grep $DIF_PID | grep java > /dev/null
+            RETVAL=$?  
+        fi
+        
+        # Remove the PID file if we found the process was not running
+        if [ $RETVAL -eq 1 ]
+        then
+            rm -f $DIF_PID_FILE
+        fi
+    fi
+    
+    # If we are in verbose mode then report on the status
+    if [ $verbose -eq 1 ]
+    then
+        if [ $RETVAL -eq 0 ]
+        then
+            echo "$DIF_EXE_NAME is running with pid" $DIF_PID
+        else
+            echo "$DIF_EXE_NAME is stopped"
+        fi
+    fi
+    
+    return $RETVAL
+}
+
+restart() {
+    stop
+    start
+}    
+
+case "$1" in
+  start)
+      start
+    ;;
+  stop)
+      stop
+    ;;
+  status)
+      difstatus 1 
+    ;;
+  restart)
+      restart
+    ;;
+  *)
+    echo $"Usage: $0 {start|stop|status|restart}"
+    exit 2
+esac
+
+exit $?
+

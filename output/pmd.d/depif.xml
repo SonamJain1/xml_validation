@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright Mobileum  2021. This program must not be used
+  ~ for any purpose without written permission from Mobileum.
+  ~ http://www.mobileum.com/
+  -->
+
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+
+    <settings>
+        <variables>
+            <var name="DEPIF_BASE" val="/opt/engine" />
+        </variables>
+    </settings>
+
+    <group name="depif"
+           path="${JAVA8_HOME}/bin"
+           dir="/opt/engine/bin">
+        <processes>
+            <process name="depif"/>
+        </processes>
+    </group>
+
+    <process name="depif"
+             importSystemEnvironment="true"
+             cmd="./start-depif.sh">
+        <envEntry var="DEPIF_JAVA_XMS_ARG"      val="512m"/>
+        <envEntry var="DEPIF_JAVA_XMX_ARG"      val="512m"/>
+        <envEntry var="DEPIF_BASE_DIR"          val="${DEPIF_BASE}"/>
+        <envEntry var="DEPIF_NODE_ID"             val="nif01"/>
+        <envEntry var="DEPIF_INSTANCE_ID"         val="01"/>
+        <envEntry var="DEPIF_EWOK_NODE_ID"        val="52"/>
+    </process>
+
+</pmd>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <var name="TCPWATCHDOGPMON_BASE" val="/opt/pmon-steering"/>
+        </variables>
+    </settings>
+
+    <group name="tcpwatchdogpmon">
+        <processes>
+            <process name="tcpwatchdogpmon"/>
+        </processes>
+    </group>
+
+    <process name="tcpwatchdogpmon" path="${TCPWATCHDOGPMON_BASE}/bin" dir="${TCPWATCHDOGPMON_BASE}/bin" cmd="./pmon_tcpwatchdog">
+
+        <args>${TCPWATCHDOGPMON_BASE}/conf/pmon_tcpwatchdog.cfg</args>
+
+        <envEntry var="LD_BIND_NOW" val="1"/>
+        <envEntry var="DB_PRINT" val="0"/>
+        <envEntry var="DB_COMPDEBUG" val="1"/>
+        <envEntry var="DLVL_pmon" val="0"/>
+        <envEntry var="DLOG_pmon" val="${TCPWATCHDOGPMON_BASE}/logs/pmon.log"/>
+        <envEntry var="DCFG_pmon" val="${TCPWATCHDOGPMON_BASE}/conf/pmon_log.cfg"/>
+    </process>
+
+</pmd>

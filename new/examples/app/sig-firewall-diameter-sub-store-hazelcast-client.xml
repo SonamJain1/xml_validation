@@ -1,0 +1,27 @@
+<hazelcast-client xsi:schemaLocation="http://www.hazelcast.com/schema/client-config hazelcast-client-config-5.2.xsd"
+                  xmlns="http://www.hazelcast.com/schema/client-config"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+<!--    <cluster-name>hzcluster</cluster-name>-->
+
+    <network>
+        <cluster-members>
+            <address>127.0.0.1:5702</address>
+        </cluster-members>
+        <aws enabled="false"/>
+    </network>
+
+    <serialization>
+        <data-serializable-factories>
+            <data-serializable-factory factory-id="1">
+                com.evolvedintelligence.engine.sigfirewall.subscriber.location.hazelcast.HazelcastSubscriberLocationDataSerializableFactory
+            </data-serializable-factory>
+        </data-serializable-factories>
+    </serialization>
+
+    <properties>
+        <property name="hazelcast.logging.type">log4j</property>
+        <property name="hazelcast.health.monitoring.level">NOISY</property>
+    </properties>
+
+</hazelcast-client>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="pmdConfiguration"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdConfiguration"
+        init-method="validateSpringConfiguration">
+        <property name="importSystemPath" value="true" />
+        <property name="importSystemEnvironment" value="true" />
+        <property name="processGroups">
+            <set>
+                <value id="1">group2</value>
+            </set>
+        </property>
+        <property name="directory" value="${ENGINE_BASEDIR}" />
+    </bean>
+
+    <bean id="group1"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdProcessGroup"
+        init-method="validateSpringConfiguration">
+        <property name="id" value="group1" />
+        <property name="priority" value="1" />
+        <property name="lockStep" value="false" />
+        <property name="processes">
+            <set>
+                <value id="1">envcheck1</value>
+                <value>envcheck2</value>
+            </set>
+        </property>
+    </bean>
+
+    <bean name="envcheck1"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+        init-method="validateSpringConfiguration">
+        <property name="id" value="envcheck1" />
+        <property name="command" value="env" />
+        <property name="importSystemEnvironment" value="true" />
+        <property name="maxstartattempts" value="1" />
+    </bean>
+
+    <bean name="envcheck2"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+        init-method="validateSpringConfiguration">
+        <property name="id" value="envcheck2" />
+        <property name="command" value="env" />
+        <property name="importSystemEnvironment" value="true" />
+        <property name="environment" ref="env-vars" />
+        <property name="maxstartattempts" value="1" />
+    </bean>
+
+    <bean id="env-vars"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdEnvironment"
+        init-method="validateSpringConfiguration">
+        <property name="override" value="true" />
+        <property name="environment">
+            <map>
+                <entry key="MYVARA" value="one" />
+                <entry key="MYVARB" value="two" />
+            </map>
+        </property>
+    </bean>
+    
+</beans>

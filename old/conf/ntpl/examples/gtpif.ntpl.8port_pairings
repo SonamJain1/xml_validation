@@ -1,0 +1,158 @@
+#
+# The idea here is that the following port mappings are created:
+#
+# World <-> INBOUND_PORT1 <-> NIF <-> OUTBOUND_PORT1 <-> Tenant
+# World <-> INBOUND_PORT2 <-> NIF <-> OUTBOUND_PORT2 <-> Tenant
+# World <-> INBOUND_PORT3 <-> NIF <-> OUTBOUND_PORT3 <-> Tenant
+# World <-> INBOUND_PORT4 <-> NIF <-> OUTBOUND_PORT3 <-> Tenant
+#
+# The naming may be confusing - the thinking is that
+# traffic received on:
+#
+# INBOUND_PORTx is inbound - ie. headed towards the tenant.
+# OUTBOUND_PORTx is outbound - ie. headed away from the tenant.
+#
+
+DefineMacro("INBOUND_PORT1", "0")
+DefineMacro("INBOUND_PORT2", "1")
+DefineMacro("INBOUND_PORT3", "2")
+DefineMacro("INBOUND_PORT4", "3")
+DefineMacro("OUTBOUND_PORT1", "4")
+DefineMacro("OUTBOUND_PORT2", "5")
+DefineMacro("OUTBOUND_PORT3", "6")
+DefineMacro("OUTBOUND_PORT4", "7")
+
+# Stream Ids
+DefineMacro("Unfragmented_GTP_Stream1", "1")
+DefineMacro("Unfragmented_GTP_Stream2", "2")
+DefineMacro("Unfragmented_GTP_Stream3", "3")
+DefineMacro("Unfragmented_GTP_Stream4", "4")
+DefineMacro("IPv4_Fragment_Stream1", "5")
+DefineMacro("IPv4_Fragment_Stream2", "6")
+DefineMacro("IPv4_Fragment_Stream3", "7")
+DefineMacro("IPv4_Fragment_Stream4", "8")
+
+# Key List IDs:
+# 1 and 2 == Tenant IPs/SubNets
+DefineMacro("TenatIPv4Addrs", "1")
+DefineMacro("TenantIPv6Addrs", "2")
+
+# For unfragmented traffic rx'd on INBOUND_PORT1
+# For unfragmented traffic rx'd on INBOUND_PORT2
+# For unfragmented traffic rx'd on INBOUND_PORT3
+# For unfragmented traffic rx'd on INBOUND_PORT4
+Setup[TxDescriptor=Dyn;TxPorts=OUTBOUND_PORT1;TxIgnorePos=42;UseWL=True] = StreamId == Unfragmented_GTP_Stream1
+Setup[TxDescriptor=Dyn;TxPorts=OUTBOUND_PORT2;TxIgnorePos=42;UseWL=True] = StreamId == Unfragmented_GTP_Stream2
+Setup[TxDescriptor=Dyn;TxPorts=OUTBOUND_PORT3;TxIgnorePos=42;UseWL=True] = StreamId == Unfragmented_GTP_Stream3
+Setup[TxDescriptor=Dyn;TxPorts=OUTBOUND_PORT4;TxIgnorePos=42;UseWL=True] = StreamId == Unfragmented_GTP_Stream4
+
+
+# For fragmented traffic rx'd on INBOUND_PORT1
+# For fragmented traffic rx'd on INBOUND_PORT2
+# For fragmented traffic rx'd on INBOUND_PORT3
+# For fragmented traffic rx'd on INBOUND_PORT4
+Setup[TxDescriptor=Dyn;TxPorts=OUTBOUND_PORT1;TxIgnorePos=42;UseWL=True] = StreamId == IPv4_Fragment_Stream1
+Setup[TxDescriptor=Dyn;TxPorts=OUTBOUND_PORT2;TxIgnorePos=42;UseWL=True] = StreamId == IPv4_Fragment_Stream2
+Setup[TxDescriptor=Dyn;TxPorts=OUTBOUND_PORT3;TxIgnorePos=42;UseWL=True] = StreamId == IPv4_Fragment_Stream3
+Setup[TxDescriptor=Dyn;TxPorts=OUTBOUND_PORT4;TxIgnorePos=42;UseWL=True] = StreamId == IPv4_Fragment_Stream4
+
+Define IsIPv4 = Filter(Layer3Protocol == IPv4)
+Define IsIPv6 = Filter(Layer3Protocol == IPv6)
+
+Define IPv4Dst = Field(Layer3Header[16]/32)
+Define IPv6Dst = Field(Layer3Header[24]/128)
+
+DefineMacro("TowardsTenant", "((IsIPv4 AND KeyMatch(IPv4Dst) == TenatIPv4Addrs) OR \
+                               (IsIPv6 AND KeyMatch(IPv6Dst) == TenantIPv6Addrs))")
+
+DefineMacro("NotTowardsTenant", "((IsIPv4 AND KeyMatch(IPv4Dst) != TenatIPv4Addrs) OR \
+                                  (IsIPv6 AND KeyMatch(IPv6Dst) != TenantIPv6Addrs))")
+
+# Just dest port needs to be 3386
+# according to section 9.1.1.1 of
+# 3GPP TS 09.60 V7.10.0 (2002-12)
+
+DefineMacro("IsGTPcV0", "((Data[DynOffset=DynOffUdpFrame; Offset=2; DataType=ByteStr2] == 3386) AND \
+                          (Data[DynOffset=DynOffUdpData; Offset=1; DataType=ByteStr1] != 0xFF) AND \
+                          (Data[DynOffset=DynOffUdpData; Offset=1; DataType=ByteStr1] != 26))")
+
+DefineMacro("NotGTPcV0", "((Data[DynOffset=DynOffUdpFrame; Offset=2; DataType=ByteStr2] != 3386) OR \
+                           (Data[DynOffset=DynOffUdpData; Offset=1; DataType=ByteStr1] == 0xFF) OR \
+                           (Data[DynOffset=DynOffUdpData; Offset=1; DataType=ByteStr1] == 26))")
+
+# This works for both IPv4 and IPv6 but we're only configuring
+# IPv4 addresses for tenants at the mo.
+DefineMacro("IsIPv4Fragment", "Fragment==First,Middle,Last")
+DefineMacro("NotIPv4Fragment", "Fragment==Not")
+
+# Offset0 = IPv4 header
+# Offset1 = GTP packet start
+
+# Inbouncd - unfragmented GTP traffic.
+# A filter can match against up to 2 KeyLists.
+Assign[StreamId=Unfragmented_GTP_Stream1;Descriptor=Dyn3,Offset0=Layer3Header[0],Offset1=Layer4Payload[0]] = Port == INBOUND_PORT1 AND \
+                                                                                                             TowardsTenant AND \
+                                                                                                             Layer4Protocol == UDP AND \
+                                                                                                             NotIPv4Fragment AND \
+                                                                                                             (TunnelType == GTPv1v2-C OR IsGTPcV0)
+Assign[StreamId=Unfragmented_GTP_Stream2;Descriptor=Dyn3,Offset0=Layer3Header[0],Offset1=Layer4Payload[0]] = Port == INBOUND_PORT2 AND \
+                                                                                                             TowardsTenant AND \
+                                                                                                             Layer4Protocol == UDP AND \
+                                                                                                             NotIPv4Fragment AND \
+                                                                                                             (TunnelType == GTPv1v2-C OR IsGTPcV0)
+Assign[StreamId=Unfragmented_GTP_Stream3;Descriptor=Dyn3,Offset0=Layer3Header[0],Offset1=Layer4Payload[0]] = Port == INBOUND_PORT3 AND \
+                                                                                                             TowardsTenant AND \
+                                                                                                             Layer4Protocol == UDP AND \
+                                                                                                             NotIPv4Fragment AND \
+                                                                                                             (TunnelType == GTPv1v2-C OR IsGTPcV0)
+Assign[StreamId=Unfragmented_GTP_Stream4;Descriptor=Dyn3,Offset0=Layer3Header[0],Offset1=Layer4Payload[0]] = Port == INBOUND_PORT4 AND \
+                                                                                                             TowardsTenant AND \
+                                                                                                             Layer4Protocol == UDP AND \
+                                                                                                             NotIPv4Fragment AND \
+                                                                                                             (TunnelType == GTPv1v2-C OR IsGTPcV0)
+
+# Inbound IPv4 fragments.
+Assign[StreamId=IPv4_Fragment_Stream1;Descriptor=Dyn3,Offset0=Layer3Header[0]] = Port == INBOUND_PORT1 AND \
+                                                                                 TowardsTenant AND \
+                                                                                 IsIPv4Fragment
+Assign[StreamId=IPv4_Fragment_Stream2;Descriptor=Dyn3,Offset0=Layer3Header[0]] = Port == INBOUND_PORT2 AND \
+                                                                                 TowardsTenant AND \
+                                                                                 IsIPv4Fragment
+Assign[StreamId=IPv4_Fragment_Stream3;Descriptor=Dyn3,Offset0=Layer3Header[0]] = Port == INBOUND_PORT3 AND \
+                                                                                 TowardsTenant AND \
+                                                                                 IsIPv4Fragment
+Assign[StreamId=IPv4_Fragment_Stream4;Descriptor=Dyn3,Offset0=Layer3Header[0]] = Port == INBOUND_PORT4 AND \
+                                                                                 TowardsTenant AND \
+                                                                                 IsIPv4Fragment
+
+# Inbound (in terms of Napa ports) but not headed towards the tenant as defined by IPv4 destination addr.
+Retransmit [SourcePort = INBOUND_PORT1; DestinationPort = OUTBOUND_PORT1] = NotTowardsTenant OR \
+                                                                              (Layer4Protocol != UDP AND \
+                                                                               NotIPv4Fragment) OR \
+                                                                                 (TunnelType != GTPv1v2-C AND \
+                                                                                  NotGTPcV0 AND \
+                                                                                  NotIPv4Fragment)
+Retransmit [SourcePort = INBOUND_PORT2; DestinationPort = OUTBOUND_PORT2] = NotTowardsTenant OR \
+                                                                              (Layer4Protocol != UDP AND \
+                                                                               NotIPv4Fragment) OR \
+                                                                                 (TunnelType != GTPv1v2-C AND \
+                                                                                  NotGTPcV0 AND \
+                                                                                  NotIPv4Fragment)
+Retransmit [SourcePort = INBOUND_PORT3; DestinationPort = OUTBOUND_PORT3] = NotTowardsTenant OR \
+                                                                              (Layer4Protocol != UDP AND \
+                                                                               NotIPv4Fragment) OR \
+                                                                                 (TunnelType != GTPv1v2-C AND \
+                                                                                  NotGTPcV0 AND \
+                                                                                  NotIPv4Fragment)
+Retransmit [SourcePort = INBOUND_PORT4; DestinationPort = OUTBOUND_PORT4] = NotTowardsTenant OR \
+                                                                              (Layer4Protocol != UDP AND \
+                                                                               NotIPv4Fragment) OR \
+                                                                                 (TunnelType != GTPv1v2-C AND \
+                                                                                  NotGTPcV0 AND \
+                                                                                  NotIPv4Fragment)
+
+# Outbound traffic in terms of NapaTech ports.
+Retransmit [SourcePort = OUTBOUND_PORT1; DestinationPort = INBOUND_PORT1] = All
+Retransmit [SourcePort = OUTBOUND_PORT2; DestinationPort = INBOUND_PORT2] = All
+Retransmit [SourcePort = OUTBOUND_PORT3; DestinationPort = INBOUND_PORT3] = All
+Retransmit [SourcePort = OUTBOUND_PORT4; DestinationPort = INBOUND_PORT4] = All

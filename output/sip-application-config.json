@@ -1,0 +1,85 @@
+{
+    "applicationRequestSipUri": "127.0.0.1:5070",
+    "applicationSipUri": "127.0.0.1:5070",
+    "myPeers": [
+        {
+            "peerSipUri": "sbc1@airtel.com",
+            "ipAddress": "127.0.0.1",
+            "port": "5060",
+            "transport": "udp"
+        },
+        {
+            "peerSipUri": "sbc2@airtel.com",
+            "ipAddress": "127.0.0.1",
+            "port": "5060",
+            "transport": "udp"
+        },
+        {
+            "peerSipUri": "sbcX@jio.com",
+            "ipAddress": "10.0.0.0",
+            "port": "5060",
+            "transport": "udp"
+        },
+        {
+            "peerSipUri": "sbc4@vodafone.com",
+            "ipAddress": "10.1.1.1",
+            "port": "5060",
+            "transport": "udp"
+        },
+        {
+            "peerSipUri": "sbc5@vodafone.com",
+            "ipAddress": "10.10.10.10",
+            "port": "5060",
+            "transport": "udp"
+        },
+        {
+            "peerSipUri": "sbc6@vodafone.com",
+            "ipAddress": "10.10.20.10",
+            "port": "5060",
+            "transport": "udp"
+        },
+        {
+            "peerSipUri": "sbcY@vodafone.com",
+            "ipAddress": "10.10.10.10",
+            "port": "5060",
+            "transport": "udp"
+        }
+    ],
+    "routingConfig": [
+        {
+            "destinationUri": "airtel.com",
+            "peerURI": "sbc1@airtel.com",
+            "sipUriPeerPriority": 1
+        },
+        {
+            "destinationUri": "airtel.com",
+            "peerURI": "sbc2@airtel.com",
+            "sipUriPeerPriority": 2
+        },
+        {
+            "destinationUri": "jio.com",
+            "peerURI": "sbcX@jio.com",
+            "sipUriPeerPriority": 1
+        },
+        {
+            "destinationUri": "default",
+            "peerURI": "sbcY@vodafone.com",
+            "sipUriPeerPriority": 1
+        },
+        {
+            "destinationUri": "rk@airtel.com",
+            "peerURI": "sbc4@vodafone.com",
+            "sipUriPeerPriority": 1
+        },
+        {
+            "destinationUri": "127.0.0.1:5080",
+            "peerURI": "sbc5@vodafone.com",
+            "sipUriPeerPriority": 1
+        },
+        {
+            "destinationUri": "127.0.0.1:5080",
+            "peerURI": "sbc6@vodafone.com",
+            "sipUriPeerPriority": 2
+        }
+    ]
+}

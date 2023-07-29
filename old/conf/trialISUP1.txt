@@ -1,0 +1,25 @@
+[CARD CONFIGURATION]
+#CardId|ifId|IPAddres|Port|NumReconnAttempts|ReconnTimer|TimingRole|FirmwareFileName|SelfBoot|TrunksPerCard
+0|0|127.0.0.1|9200|500|5|A_PRIMARY_MASTER|N/A|YES|4
+
+[CARD TIMING CONFIGURATION]
+#CardId|TimingSourceType|TimingSource|Stream
+0|PRIMARY|E1|2
+0|FALLBACK|E1|3
+
+[TRUNK CONFIGURATION]
+#TrunkName|CardId|TrunkId|FramingFormat|CRCMode|LineBuildOut|LossThreshold
+TRUNKA|0|2|E1_75_HDB3|CRC_OFF|0|LT_DEFAULT
+TRUNKB|0|3|E1_75_HDB3|CRC_OFF|0|LT_DEFAULT
+
+[STACK CONFIGURATION]
+#APP_NAME|ORIGINATING_PC|ORIGINATING_NI|LAYER4_USER_NAMES
+etsi_mtpl3_0|123|NATIONAL|ISUP=isup_0
+
+[ISUP STACKS]
+#StackName|OPC
+isup_0|123
+
+[CIC GROUPS]
+#IsupStackName|GroupName|TrunkName|DPC|NI|ControllingEnd|BaseCic|CICs
+isup_0|Group1|TRUNKA|321|NATIONAL|NON-CONTROLLING-END|100|1-10, 12, 14, 15, 18-25

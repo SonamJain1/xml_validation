@@ -1,0 +1,96 @@
+{
+  "hostName": "signallingfirewall.mobileum.com",
+  "realm": "mobileum.com",
+  "supportedApplications": [
+    {
+      "vendorId": 3830,
+      "authApplicationId": 16777275,
+      "acctApplicationId": 0
+    }
+  ],
+  "peerConfig": [
+    {
+      "hostId": "moopen1mn01",
+      "ipAddress": "10.5.3.130",
+      "initiateConnection": false
+    },
+    {
+      "hostId": "moopen1mn02",
+      "ipAddress": "10.5.3.130",
+      "initiateConnection": false
+    },
+    {
+      "hostId": "moopca1mn01",
+      "ipAddress": "10.5.3.130",
+      "initiateConnection": false
+    },
+    {
+      "hostId": "moopen1cm01.optus.com.au",
+      "initiateConnection": false
+    },
+    {
+      "hostId": "moopen1cm02.optus.com.au",
+      "ipAddress": "10.5.3.130",
+      "initiateConnection": false
+    }
+  ],
+  "routingConfig": [
+    {
+      "hostId": "moopen1mn01",
+      "primaryIpAddress": "10.7.3.130",
+      "realmName": "acision.com",
+      "applicationId": {
+        "vendorId": 3830,
+        "authApplicationId": 16777275,
+        "acctApplicationId": 0
+      },
+      "realmPeerPriority": 1
+    },
+    {
+      "hostId": "moopen1mn02",
+      "primaryIpAddress": "10.7.3.130",
+      "realmName": "acision.com",
+      "applicationId": {
+        "vendorId": 3830,
+        "authApplicationId": 16777275,
+        "acctApplicationId": 0
+      },
+      "realmPeerPriority": 1
+    },
+    {
+      "hostId": "moopca1mn01",
+      "primaryIpAddress": "10.7.3.130",
+      "realmName": "acision.com",
+      "applicationId": {
+        "vendorId": 3830,
+        "authApplicationId": 16777275,
+        "acctApplicationId": 0
+      },
+      "realmPeerPriority": 1
+    },
+    {
+      "hostId": "moopen1cm01.optus.com.au",
+      "primaryIpAddress": "10.7.3.130",
+      "realmName": "acision.com",
+      "applicationId": {
+        "vendorId": 3830,
+        "authApplicationId": 16777275,
+        "acctApplicationId": 0
+      },
+      "realmPeerPriority": 1
+    },
+    {
+      "hostId": "moopen1cm02.optus.com.au",
+      "primaryIpAddress": "10.7.3.130",
+      "realmName": "acision.com",
+      "applicationId": {
+        "vendorId": 3830,
+        "authApplicationId": 16777275,
+        "acctApplicationId": 0
+      },
+      "realmPeerPriority": 1
+    }
+  ],
+  "peerNodeSelectionPolicy": "ROUNDROBIN",
+  "localAction": "LOCAL"
+}

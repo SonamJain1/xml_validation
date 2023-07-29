@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <!-- <settings snmphost="localhost"> -->
+    <settings>
+        <!--
+        <extensionconfigdir dir="/opt/engine/conf/pmd.d">
+            <excludedfile val="ld.xml"/>
+        </extensionconfigdir>
+        -->
+    </settings>
+
+    <group name="ss7" lockstep="true" active="true">
+        <processes>
+            <process name="m3ua_0"/>
+            <process name="sccp_0"/>
+            <process name="isup_0"/>
+            <process name="sif"/>
+            <process name="mgmt"/>
+            <process name="securityapp"/>
+        </processes>
+    </group>
+
+    <process name="m3ua_0"  cmd="m3uaStack">
+        <args>-d255 -f/opt/NGNTdapi/Logs/m3ua_0.log -maint maint:127.0.0.1:4000 -user tcap_0::3020</args>
+        <args>-appId m3ua_0 -security security:127.0.0.1:9100 -loadshareCyclic</args>
+        <args>-allwaysNotifyDestStatus -aspIdOfs+2 -aliasPointCode 196866 -ASPUpAckWithNoId</args>
+    </process>
+
+    <process name="sccp_0"  cmd="sccpStack">
+        <args>-d0 -f/opt/NGNTdapi/Logs/tcap_0.log -telnetport 7654 -p ITU -xudt</args>
+        <args>-mtpl3 etsi_mtpl3_0:127.0.0.1:3020 -user ::3090 -appId tcap_0</args>
+        <args>-ui_encode -no_opId -noTdapiMod -selectEntityOnSSN -lastDestOnGt</args>
+        <args>-segmentBytes 0 -security :127.0.0.1:9100 -logsize 10485760 -logcount 10</args>
+    </process>
+
+    <process name="isup_0"  cmd="isupStack" istate="STOPPED">
+        <args>-f /opt/NGNTdapi/Logs/isup_0.log -d0 -apiversion 1 -allow_all_digits -idle -protocol ETSI</args>
+        <args>-appId isup_0 -mnt :127.0.0.1:4000 -mtp :127.0.0.1:3020 -callctrl ::3030</args>
+        <args>-sclient :127.0.0.1:9100</args>
+    </process>
+
+    <process name="sif"   cmd="sif">
+        <args>/opt/engine/conf/sif.cfg</args>
+
+        <envEntry var="DLVL_sif" val="0"/>
+        <envEntry var="DLOG_sif" val="/opt/engine/logs/sif.log"/>
+    </process>
+
+    <process name="mgmt"  cmd="mgmt-daemon">
+        <args>-a 62777 /opt/engine/conf/mgmt_daemon.cfg</args>
+
+        <envEntry var="DLVL_mgmt_daemon" val="0"/>
+        <envEntry var="DLOG_mgmt_daemon" val="/opt/engine/logs/mgmt_daemon.log"/>
+    </process>
+
+    <process name="securityapp" cmd="security">
+        <args>/opt/engine/conf/security.cfg</args>
+
+        <envEntry var="DLOG_security" val="/opt/engine/logs/security.log"/>
+        <envEntry var="DLVL_security" val="0"/>
+    </process>
+
+</pmd>

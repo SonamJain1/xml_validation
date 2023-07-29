@@ -1,0 +1,56 @@
+template header
+ruleType
+ruleId
+name
+version
+ruleCategory
+ruleSubcategory
+evaluationRule
+applicationId
+commandCode
+isRequest
+avps
+actionId
+ruleFlowGroup
+salience
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.consistency.*;
+
+template "diameter_category_2_1_rule"
+
+rule "Diameter_Category2_1_Rule(@{ruleId})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message
+        $msg : DiameterMessage( applicationId == @{applicationId},
+                                commandCode == @{commandCode},
+                                isRequest() == @{isRequest},
+                                tenant : tenant != null,
+                                tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true,
+                                $consistencyCheckResult : checkConsistency(@{avps}) != null )
+
+        // Did the consistency check fail?
+        eval ( $consistencyCheckResult.getResult() == ConsistencyResult.AVPS_INCONSITENT )
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( $results.getIsAllowed() )
+        {
+            modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                      "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule},
+                                       $consistencyCheckResult.getOperatorAvpList()) };
+        }
+end
+
+end template

@@ -1,0 +1,17 @@
+{
+  "appList" :
+  [
+    {
+      "appPath" : "/opt/engine/bin/eccm",
+      "appJarPath" : "/opt/engine/jars/",
+      "serverJarName" : "eccm-main",
+      "rmiPortNumber" : 62789
+    },
+    {
+      "appPath" : "/opt/engine/bin/dif",
+      "appJarPath" : "/opt/engine/jars/",
+      "serverJarName" : "dif-main",
+      "rmiPortNumber" : 62345
+    }
+  ]
+}

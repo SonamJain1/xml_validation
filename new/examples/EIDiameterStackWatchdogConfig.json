@@ -1,0 +1,11 @@
+{
+  "watchdogPeriodicTimerSeconds" : 60,
+  "applicationProcessName" : "ProxyMain",
+  "applicationItfName": "EIDIAMETERSERVER",
+  "failureHystersis" : 3,
+  "diameterStackConfigAbsolutePath" : "/opt/engine/conf/optusAdmiStackExampleConfig.json",
+  "applicationItfJarFilePath": "/opt/engine/jars",
+  "applicationAbsolutePath" : "/opt/engine/bin/dif",
+  "remoteJarName" : "diameter-sctp-stack",
+  "divergenceTxRxPercentage" : 51
+}

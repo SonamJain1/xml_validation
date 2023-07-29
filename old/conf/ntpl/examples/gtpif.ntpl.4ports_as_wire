@@ -1,0 +1,28 @@
+#
+# Turn a 4-port NapaTech adapter into a "piece of wire".
+#
+
+#
+# The default setup is to create the following port links:
+#
+# 0 <-> 2
+# 1 <-> 3
+
+#
+# Modifying the following 4 macros would
+# be preferrable to modifying the
+# Retransmit Statements directly.
+#
+
+DefineMacro("LEFT_PORT1", "0")
+DefineMacro("LEFT_PORT2", "1")
+
+DefineMacro("RIGHT_PORT1", "2")
+DefineMacro("RIGHT_PORT2", "3")
+
+
+Retransmit [SourcePort = LEFT_PORT1; DestinationPort = RIGHT_PORT1] = all
+Retransmit [SourcePort = LEFT_PORT2; DestinationPort = RIGHT_PORT2] = all
+
+Retransmit [SourcePort = RIGHT_PORT1; DestinationPort = LEFT_PORT1] = all
+Retransmit [SourcePort = RIGHT_PORT2; DestinationPort = LEFT_PORT2] = all

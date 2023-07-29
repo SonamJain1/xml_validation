@@ -1,0 +1,33 @@
+{
+  "hostName": "diameter-client",
+  "realm": "diameter-client",
+  "supportedApplications": [
+    {
+      "vendorId": 10415,
+      "authApplicationId": 16777217,
+      "acctApplicationId": 0
+    }
+  ],
+  "peerConfig": [
+    {
+      "hostId": "diameter-server1",
+      "ipAddress": "diameter-server",
+      "tenantSet": ["testtenant1"]
+    }
+  ],
+  "routingConfig": [
+    {
+      "hostId": "diameter-server1",
+      "primaryIpAddress": "diameter-server",
+      "realmName": "default",
+      "applicationId": {
+        "vendorId": 10415,
+        "authApplicationId": 16777217,
+        "acctApplicationId": 0
+      },
+      "realmPeerPriority": 1
+    }
+  ],
+  "localAction": "LOCAL",
+  "peerNodeSelectionPolicy": "LOCAL_REQUEST_GENERATING"
+}

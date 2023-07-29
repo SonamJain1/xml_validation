@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <var name="LOCTRACK_BASE"   val="/opt/pmon_diamloctrack" />
+            <var name="PMON_GRP_NAME"   val="diamloctrackpmon" />
+            <var name="PMON_PROC_NAME"  val="diamloctrackpmon" />
+        </variables>
+    </settings>
+
+    <group name="${PMON_GRP_NAME}">
+        <processes>
+            <process name="${PMON_PROC_NAME}"/>
+        </processes>
+    </group>
+
+    <process name="${PMON_PROC_NAME}"
+             path="${LOCTRACK_BASE}/bin"
+             dir="${LOCTRACK_BASE}/bin"
+             cmd="./pmon_diamloctrack">
+
+        <args>${LOCTRACK_BASE}/conf/pmon_diamloctrack.cfg</args>
+
+        <envEntry var="DB_PRINT" val="0"/>
+        <envEntry var="DB_COMPDEBUG" val="1"/>
+        <!-- <envEntry var="DB_MAXLOGSIZE" val="60MB"/> -->
+        <envEntry var="DLVL_pmon" val="0"/>
+        <envEntry var="DLOG_pmon" val="${LOCTRACK_BASE}/logs/pmon.log"/>
+        <envEntry var="DCFG_pmon" val="${LOCTRACK_BASE}/conf/pmon_log.cfg"/>
+    </process>
+
+</pmd>

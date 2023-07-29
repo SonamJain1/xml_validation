@@ -1,0 +1,49 @@
+template header
+ruleType
+ruleId
+name
+version
+ruleCategory
+ruleSubcategory
+evaluationRule
+decodeFailureReason
+actionId
+ruleFlowGroup
+salience
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.decode.DecodeResult;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+
+template "diameter_message_validation_rule"
+
+rule "DiameterMessageValidationRule(@{ruleId}_@{decodeFailureReason})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message
+        DiameterMessage( decodeResult != null,
+                         decodeResult.result != DecodeResult.DECODE_SUCCESS,
+                         $avps : decodeResult.getDecodeFailures(${decodeFailureReason}) != null,
+                         $avps.isEmpty == false,
+                         tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true )
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( ! $results.getIsExplicitlyBlocked() )
+        {
+            modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                      "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule},
+                                       $avps) };
+        }
+end
+
+end template

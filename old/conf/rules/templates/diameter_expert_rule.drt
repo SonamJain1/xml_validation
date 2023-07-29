@@ -1,0 +1,65 @@
+template header
+ruleType
+ruleId
+name
+version
+ruleCategory
+ruleSubcategory
+evaluationRule
+applicationId
+commandCode
+actionId
+ruleFlowGroup
+salience
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.expertrules.runner.DiameterExpertRuleRunnerFactory;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.expertrules.runner.DiameterExpertRuleRunner;
+
+
+template "diameter_expert_rule"
+
+rule "Diameter_Expert_Rule(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message
+        $msg : DiameterMessage(
+                            isRequest() == true,
+                            applicationId == @{applicationId},
+                            commandCode == @{commandCode},
+                            $tenant : tenant != null,
+                            $tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true
+        )
+
+        $ruleRunner : DiameterExpertRuleRunner()
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( $results.getIsAllowed() )
+        {
+            if ( $ruleRunner.setData($msg, $tenant, @{ruleId}) )
+            {
+                if ( $ruleRunner.runRule() != null )
+                {
+                     if ($ruleRunner.hasFailed())
+                     {
+                         modify( $results ) { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                                  "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule},
+                                                   $ruleRunner.getAVPs()) };
+                     }
+                }
+            }
+        }
+    end
+
+end template

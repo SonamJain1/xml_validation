@@ -1,0 +1,14 @@
+primitive p_ip_dif IPaddr2 \
+	params ip=10.7.3.135 cidr_netmask=24 nic=eth0 \
+        op monitor interval="10s"
+primitive p_dif lsb:dif \
+        op monitor interval="10s"
+group g_dif p_ip_dif p_dif \
+        meta resource-stickiness="101"
+colocation c_dif inf: p_ip_dif p_dif
+
+property stonith-enabled=false
+rsc_defaults resource-stickiness=100
+
+commit
+

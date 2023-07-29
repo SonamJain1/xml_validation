@@ -1,0 +1,30 @@
+Setup[TxDescriptor=Dyn;TxPorts=6;TxIgnorePos=42;UseWL=True] = StreamId == 1
+
+Define GTPuTEID = Field(Layer4Payload[4]/32)
+
+KeyType[Name=teidKT; Access=Partial] = {32}
+KeyDef[Name=teidDef; KeyType=teidKT] = (GTPuTEID)
+KeyList[KeyType=teidKT; KeySet=5] = (0x0000cb6c),(0x0000d27c),(0x00016ce1)
+
+Retransmit [SourcePort = 5; DestinationPort = 6] = Layer4Protocol == UDP AND \
+                                                   (TunnelType == GTPv0-U OR TunnelType == GTPv1-U) AND \
+                                                   Key(teidDef) != 5
+
+# GTP Message Type
+# offset 0 into UDP payload, width 16bits (msg flags + msg type)
+
+Define GTPMsgType = Field(Layer4Payload[0]/16)
+
+# 8bit key size is not allowed.
+KeyType[Name=GTPMsgTypeKT; Access=Partial] = {16}
+
+# Mask to 8bits as KeyType can't be smaller than 16-bit
+KeyDef[Name=GTPMsgTypeDef; KeyType=GTPMsgTypeKT] = ({0x00FF:GTPMsgType})
+
+# Echo Request and Create PDP Context Request.
+KeyList[KeyType=GTPMsgTypeKT; KeySet=3] = ({0x00FF:1}), ({0x00FF:16})
+
+Assign[StreamId=1;Descriptor=Dyn3,Offset0=Layer3Header[0],Offset1=Layer4Payload[0]] = Port == 5 AND \
+                                                                                      Layer4Protocol == UDP AND \
+                                                                                      TunnelType == GTPv1v2-C AND \
+                                                                                      Key(GTPMsgTypeDef) == 3

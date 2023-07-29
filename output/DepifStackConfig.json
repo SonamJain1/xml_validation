@@ -1,0 +1,20 @@
+{
+  "uri": "aaa://diameter-server:3868",
+  "messageTimeout": 30,
+  "closeAssociationGuardTimePeriod": 25,
+  "twInitWatchdogTimePeriod": 20,
+  "awaitCERGuardTimePeriod": 10,
+  "generateInvalidAnswers": false,
+  "enablePeerDynamicDiscovery": false,
+  "sctpAssociationTXQSize": 300,
+  "sctpAssociationRXQSize": 300,
+  "diameterServerQSize": 1000,
+  "numberOfSctpStreams": 1,
+  "rxBufferPoolSize" : 250,
+  "queueLoggingFrequencyMinutes": 1,
+  "reconnectFailedPeerTimeSeconds": 60,
+  "productName": "EIDiameterLocationService",
+  "delayTransportServerSetupSeconds": 1,
+  "maxConsecutiveInvalidMessages": 100,
+  "enableServer": true
+}

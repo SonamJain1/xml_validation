@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <var name="SIG_FIREWALL_PMON_BASE" val="/opt/pmon-ss7messagestore"/>
+        </variables>
+    </settings>
+
+    <group name="ss7mspmon">
+        <processes>
+            <process name="ss7mspmon"/>
+        </processes>
+    </group>
+
+    <process name="ss7mspmon"
+             path="${SIG_FIREWALL_PMON_BASE}/bin"
+             dir="${SIG_FIREWALL_PMON_BASE}/bin"
+             cmd="./pmon_ss7ms">
+
+        <args>${SIG_FIREWALL_PMON_BASE}/conf/pmon_ss7messagestore.cfg</args>
+
+        <envEntry var="LD_BIND_NOW" val="1"/>
+        <envEntry var="DB_PRINT" val="0"/>
+        <envEntry var="DB_COMPDEBUG" val="1"/>
+        <envEntry var="DLVL_pmon" val="0"/>
+        <envEntry var="DLOG_pmon" val="${SIG_FIREWALL_PMON_BASE}/logs/pmon.log"/>
+        <envEntry var="SLOG_pmon" val="${SIG_FIREWALL_PMON_BASE}/stats/pmon_stats.log"/>
+        <envEntry var="DCFG_pmon" val="${SIG_FIREWALL_PMON_BASE}/conf/pmon_log.cfg"/>
+    </process>
+
+</pmd>

@@ -1,0 +1,44 @@
+Setup[TxDescriptor=Dyn;TxPorts=6;TxIgnorePos=42;UseWL=True] = StreamId == 1
+
+# Key List IDs:
+# 3 == GTPv0 UDP ports
+# 4 == GTPv0 GTP msg type
+
+Define UDPSrcAndDestPort = Field(Layer4Header[0]/32)
+Define GTPMsgType = Field(Layer4Payload[0]/16)
+
+# 32bit key
+# See https://docs.napatech.com/reader/n6XoTqngBo2P9~_Bd5lOww/KxLvE6l169ryFd1OB~~jcw
+# for reason behind Access=Full
+KeyType[Name=UdpPortsKT; Access=Full] = {32}
+KeyDef[Name=UdpPortsKD; KeyType=UdpPortsKT] = (UDPSrcAndDestPort)
+# 3386 is 0x0D3A
+# Both src and dest port are 3386
+KeyList[KeyType=UdpPortsKT; KeySet=3] = (0x0D3A0D3A)
+
+# 8bit key size is not allowed.
+KeyType[Name=GTPMsgTypeKT; Access=Full] = {16}
+# # Mask to 8bits as KeyType can't be smaller than 16-bit
+KeyDef[Name=GTPMsgTypeKD; KeyType=GTPMsgTypeKT] = ({0x00FF:GTPMsgType})
+# GTPv0 uses 0xFF as opCode for GTP-U
+# Mask:Value
+KeyList[KeyType=GTPMsgTypeKT; KeySet=4] = ({0x00FF:0xFF})
+
+# Offset0 = IPv4 source address
+# Offset1 = GTP packet start
+
+# A filter can match against up to 2 KeyLists.
+Assign[StreamId=1;Descriptor=Dyn3,Offset0=Layer3Header[0],Offset1=Layer4Payload[0]] = Port == 5 AND Layer4Protocol == UDP AND \
+                                                                                      (TunnelType == GTPv1v2-C OR \
+                                                                                      (Key(UdpPortsKD) == 3 AND \
+                                                                                       Key(GTPMsgTypeKD) != 4))
+
+Retransmit [SourcePort = 5; DestinationPort = 6] = Layer4Protocol != UDP OR \
+                                                   (TunnelType != GTPv1v2-C OR \
+                                                   (Key(UdpPortsKD) != 3 OR Key(GTPMsgTypeKD) == 4))
+
+
+
+
+
+#

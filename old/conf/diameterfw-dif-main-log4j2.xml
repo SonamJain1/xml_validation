@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="info" shutdownHook="disable" monitorInterval="60" >
+<Appenders>
+    <!-- ************************************************************************** -->
+    <!-- *     DIF_CONSOLE    -   Console Application Messages                    * -->
+    <!-- ************************************************************************** -->
+    <Console name="DIF_CONSOLE" target="SYSTEM_OUT">
+        <PatternLayout pattern="%d{HH:mm:ss,SSS} %c{1} %p - %m%n" />
+    </Console>
+
+    <!-- ************************************************************************** -->
+    <!-- *     DIF_LOG_FILE    -   Application Log File                           * -->
+    <!-- ************************************************************************** -->
+    <RollingFile name="DIF_LOG_FILE" fileName="${sys:DIF_BASE_DIR}/logs/dif-${sys:DIF_TECH_ID}-${sys:DIF_NODE_ID}-${sys:DIF_INSTANCE_ID}.log"
+        filePattern="${sys:DIF_BASE_DIR}/logs/dif-${sys:DIF_TECH_ID}-${sys:DIF_NODE_ID}-${sys:DIF_INSTANCE_ID}.log.%i"
+        append="true">
+        <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss,SSS} %c{1} %p - %m%n" />
+        <Policies>
+            <SizeBasedTriggeringPolicy size="20MB" />
+        </Policies>
+        <DefaultRolloverStrategy max="20" />
+    </RollingFile>
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS_PROXY_LOG_FILE    -   DIF Proxy Statistics File              * -->
+    <!-- ************************************************************************** -->
+    <RollingFile name="STATS_PROXY_LOG_FILE" fileName="${sys:DIF_BASE_DIR}/stats/dif/dif-stats-proxy.log"
+        filePattern="${sys:DIF_BASE_DIR}/stats/dif/dif-stats-proxy.log-%d{yyyyMMdd}"
+        append="true">
+        <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss.SSS} - %m%n" />
+        <Policies>
+            <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        </Policies>
+        <DefaultRolloverStrategy>
+            <Delete basePath="${sys:DIF_BASE_DIR}/stats/dif/" maxDepth="1">
+                <IfFileName glob="dif-stats-proxy.log-*" />
+                <IfLastModified age="14d" />
+            </Delete>
+        </DefaultRolloverStrategy>
+    </RollingFile>
+</Appenders>
+
+<Loggers>
+    <!-- DIF Proxy Statistics -->
+    <logger name="STATS.PROXY" level="info" additivity="false">
+        <AppenderRef ref="STATS_PROXY_LOG_FILE" />
+    </logger>
+
+    <!-- DIF Plugin -->
+    <logger name="com.evolvedintelligence.engine.sigfirewall.difplugin" level="info" additivity="false">
+        <AppenderRef ref="DIF_LOG_FILE" />
+    </logger>
+
+    <!-- DIF module -->
+    <logger name="com.evolvedintelligence.engine.dif" level="info" additivity="false">
+        <AppenderRef ref="DIF_LOG_FILE" />
+    </logger>
+
+    <!-- All other Evolved Intelligence modules -->
+    <logger name="com.evolvedintelligence.engine" level="info" additivity="false">
+        <AppenderRef ref="DIF_LOG_FILE" />
+    </logger>
+
+    <!-- Default rule for all classes -->
+    <Root level="info">
+        <AppenderRef ref="DIF_LOG_FILE" />
+    </Root>
+</Loggers>
+
+</Configuration>

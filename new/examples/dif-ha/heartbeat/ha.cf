@@ -1,0 +1,23 @@
+debugfile /var/log/ha-debug
+logfile	/var/log/ha-log
+logfacility	local0
+
+udpport 694
+bcast eth0
+keepalive 1	               # Heartbeat interval 1 sec
+warntime 3	               # Log late heartbeat after 3 secs
+deadtime 5	               # Node is dead after 5 secs
+initdead 10	               # Post reboot dead time.
+crm no		               # Use pacemaker
+auto_failback off
+max_rexmit_delay 10000
+hbgenmethod time 
+
+node dif1.example.com      # DIF Node 1
+node dif2.example.com      # DIF Node 2
+
+ping 10.7.3.1	           # Ping a switch or router
+deadping 3	               # DEADPING MUST BE LESS THAN DEADTIME
+respawn hacluster /usr/lib/heartbeat/dopd
+apiauth dopd gid=haclient uid=hacluster
+

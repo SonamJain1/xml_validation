@@ -1,0 +1,16 @@
+##################
+# Ewok management
+##################
+
+# FIXME - ldNodeIds must be unique at the load director, and ld Connections need to setup
+ldNodeId = 4701
+ldNodeName = SCTPRELAY
+ldResponseTimeout = 2
+ldConnection = ansapp1:15102
+ldConnection = ansapp2:15102
+
+ldManageHeartbeats = true
+ldClientSideBalancingEnabled = true
+
+# Destination node type - SIG_FIREWALL_APP=28
+# EwokDestType = 28

@@ -1,0 +1,13 @@
+
+# Put this in /etc/logrotate.d
+
+/opt/engine/logs/*.stdout
+/opt/engine/logs/*.stderr
+/opt/rabbitmq/var/log/rabbitmq/*.log
+{
+    rotate 5
+    size 1M
+    nocompress
+    copytruncate    
+    missingok
+}

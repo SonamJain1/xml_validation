@@ -1,0 +1,34 @@
+<hazelcast-client xmlns="http://www.hazelcast.com/schema/client-config"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://www.hazelcast.com/schema/client-confighttp://www.hazelcast.com/schema/client-config/hazelcast-client-config-5.2.xsd">
+
+    <!--cluster-name>hzcluster</cluster-name-->
+
+    <network>
+        <cluster-members>
+            <address>127.0.0.1:5701</address>
+        </cluster-members>
+        <aws enabled="false"/>
+        <!--connection-timeout>10000</connection-timeout>
+        <connection-attempt-period>1000</connection-attempt-period>
+        <connection-attempt-limit>2</connection-attempt-limit-->
+    </network>
+
+    <connection-strategy async-start="false" reconnect-mode="ON">
+        <connection-retry>
+            <initial-backoff-millis>1000</initial-backoff-millis>
+            <max-backoff-millis>60000</max-backoff-millis>
+            <multiplier>2</multiplier>
+            <cluster-connect-timeout-millis>10000</cluster-connect-timeout-millis>
+            <jitter>0.2</jitter>
+        </connection-retry>
+    </connection-strategy>
+
+    <properties>
+        <property name="hazelcast.logging.type">log4j</property>
+        <property name="hazelcast.client.heartbeat.interval">2000</property>
+        <property name="hazelcast.client.heartbeat.timeout">5000</property>
+	    <property name="hazelcast.client.invocation.timeout.seconds">10</property>
+    </properties>
+
+</hazelcast-client>

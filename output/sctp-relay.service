@@ -1,0 +1,44 @@
+#########################
+# SigFirewall SCTP Relay 
+#########################
+
+# SigFirewallMaxSessionAge = 60
+# IncludePassiveFlagInEwok = false
+# UseTenantBasedRouting = false
+
+CapReleaseCallCauseLocation = 0
+CapReleaseCallCauseValue = 16
+CapReleaseSmsCauseValue = 16
+CapReleaseGprsCauseValue = 16
+
+MonitorModeEnabled = false
+
+#############################
+# Performance Tuning Options
+#
+# These values must be in
+# the range of 1 to 100.
+#############################
+# Default value is 3.
+NumTimerThreads = 3
+NumTcapHandlingThreads = 1
+NumCASEwokThreads = 1
+
+######################
+# Overload management 
+######################
+
+# The overload management policy caps the EWOK TPS at 20,000 TPS.
+# This is averaged over a 30 second sliding window. During startup
+# it is possible that the TPS may greatly exceed the configured
+# maximum until sliding window (or 1 second wide buckets) is
+# full of data.
+#
+# Factors to consider when setting this value:
+# 1) The number of sctp-relays feeding the Signalling Firewall application.
+#    The max TPS configured here is for an individual sctp-relay process.
+# 2) The number of application nodes running the Signalling Firewall application.
+#    The max TPS configured here caps the totoal number of EWOK requests sent
+#    per second to the entire Signalling Firewall application cluster.
+
+# OverloadManagementPolicy = MaxEwokTps/30secs/20000

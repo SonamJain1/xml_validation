@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <!-- FIXME -->
+            <var name="CFG_SRV_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+    <group name="config">
+        <processes>
+            <process name="hzcfgsrv"/>
+        </processes>
+    </group>
+
+    <process name="hzcfgsrv"
+             path="${CFG_SRV_BASE}/bin"
+             directory="${CFG_SRV_BASE}/bin"
+             cmd="hzconfigserver">
+
+        <envEntry var="HZ_CFGSRV_JAVA_XMS_ARG" val="128m"/>
+        <envEntry var="HZ_CFGSRV_JAVA_XMX_ARG" val="512m"/>
+
+    </process>
+
+</pmd>

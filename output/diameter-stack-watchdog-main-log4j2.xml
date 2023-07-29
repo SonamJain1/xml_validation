@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="info" shutdownHook="disable" monitorInterval="60" >
+
+    <Appenders>
+    <!-- ************************************************************************** -->
+    <!-- *     FILE       -   Application Messages                                * -->
+    <!-- ************************************************************************** -->
+        <RollingFile name="FILE_EI_DIAM_WATCHDOG_TOOL" fileName="target/ei-diam-watchdog.log"
+                     filePattern="target/ei-diam-watchdog.log.%i"
+                     append="true">
+            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss,SSS} %p - %m%n"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+    <!-- Specific rule for this module -->
+        <logger name="com.evolvedintelligence.engine" level="info" additivity="false">
+            <AppenderRef ref="FILE_EI_DIAM_WATCHDOG_TOOL" />
+        </logger>
+
+    </Loggers>
+</Configuration>

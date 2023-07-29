@@ -1,0 +1,30 @@
+{
+
+  "sipIp": "ansnif1",
+
+  "sipPortTypes": [
+
+    {
+      "portType": "udp",
+      "ports": "5070"
+    },
+    {
+      "portType": "tcp",
+      "ports": "5060"
+    }
+
+  ],
+  "transportTypeUdp": false,
+  "transportTypeTcp": true,
+  "sipStackThreadPoolSize": "1000",
+  "sipStackDropClientConnAfterTxn": "true",
+  "sipStackUdpReceiveBufferSize": "52428800",
+  "sipStackUdpSendBufferSize": "52428800",
+  "sipStackCongestionControlTimeoutMsec": "30000",
+  "sipStackMaxServerTransactions": "200000",
+  "sipStackName": "SfwSipStack",
+  "sipStackDebugLog": "/opt/engine/logs/vif-stack.log",
+  "sipStackServerLog": "/opt/engine/logs/vif-stack.log",
+  "sipStackOutboundProxy": "ansnif1:5060/tcp",
+  "sipServerQSize": 50000000
+}

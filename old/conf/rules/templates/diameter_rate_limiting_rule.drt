@@ -1,0 +1,57 @@
+template header
+ruleType
+ruleId
+name
+version
+ruleCategory
+ruleSubcategory
+evaluationRule
+useOperatorGroup
+operator
+applicationId
+commandCode
+rateLimitGroup
+rateLimit
+actionId
+ruleFlowGroup
+salience
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+
+template "diameter_rate_limiting_rule"
+
+rule "Diameter_Rate_Limiting_Rule(@{ruleId})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Run on all messages whether blocked or allowed
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message
+        DiameterMessage( isRequest() == true,
+                         applicationId == @{applicationId},
+                         commandCode == @{commandCode},
+                         tenant.sameOperator(originRealm, @{useOperatorGroup}, "@{operator}" ) == true,
+                         $tenant : tenant != null,
+                         tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true )
+
+    then
+        if ( ! $results.getIsExplicitlyBlocked() )
+        {
+            // Is there space in the bucket?
+            if ( ! $tenant.tryConsumeFromBucket( "@{rateLimitGroup}", "@{ruleId}", 1l ) )
+            {
+                // Fail to get a token... add a rate limit failure result
+                modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                          "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule}) };
+            }
+        }
+    end
+
+end template

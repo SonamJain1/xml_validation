@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="pmdConfiguration"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdConfiguration"
+        init-method="validateSpringConfiguration">
+        <property name="importSystemPath" value="true" />
+        <property name="importSystemEnvironment" value="true" />
+        <property name="processGroups">
+            <set>
+                <value>group1</value>
+            </set>
+        </property>
+        <property name="directory" value="${ENGINE_BASEDIR}" />
+    </bean>
+
+    <bean id="group1"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdProcessGroup"
+        init-method="validateSpringConfiguration">
+        <property name="id" value="group1" />
+        <property name="priority" value="1" />
+        <property name="lockStep" value="false" />
+        <property name="processes">
+            <set>
+                <value>pathcheck</value>
+            </set>
+        </property>
+    </bean>
+
+    <bean name="pathcheck"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+        init-method="validateSpringConfiguration">
+        <property name="id" value="pathcheck" />
+        <property name="command" value="sh" />
+        <property name="path" value="/bin" />
+        <property name="importSystemPath" value="false" />
+        <property name="maxstartattempts" value="1" />
+        <property name="arguments">
+            <list>
+                <value>getPath.sh</value>
+            </list>
+        </property>
+    </bean>
+    
+</beans>

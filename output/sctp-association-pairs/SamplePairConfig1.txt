@@ -1,0 +1,31 @@
+# IpAddress of the client initiating the request into the Sctp relay
+ClientIpAddress=10.7.5.199
+
+# Port of the client initiating the request into the Sctp relay
+ClientPort=5000
+
+# Expected number of Sctp Streams that will be incoming into the Sctp Relay from the Client
+# Note: The number of streams on the paired association MUST be the same, i.e. symetrical
+NumIncomingServerStreams=32
+
+# Expected number of Sctp Streams that will be outgoing into the Sctp Relay towards the Client
+# Note: The number of streams on the paired association MUST be the same, i.e. symetrical
+NumOutgoingServerStreams=17
+
+# Primary IpAddress of the server that the sctp relay will connect to, on receiving connection from client
+ServerPrimaryIpAddress=10.7.5.238
+
+# Secondary IpAddress (if multihomed) of the server that the sctp relay will connect to, on receiving connection from client
+#ServerSecondaryIpAddress=10.7.3.199
+
+# Port to setup connection on the peer acting as the server
+ServerPort=7000
+
+# Sctp Relay port that the outgoing association will bind to
+RelayClientBindPort=7401
+
+# The IpAddress the Sctp Relay receives the connection request on from the peer acting as the client
+SctpRelayListenerIpAddress=10.7.3.141
+
+# Port that the Sctp relay receives the connection request on from the peer acting as the client
+SctpRelayListenerPort=5008

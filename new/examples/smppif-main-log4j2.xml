@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright Mobileum 2020.  This program must not be used
+  ~  for any purpose without written permission from Mobileum.
+  ~ http://www.mobileum.com/
+  -->
+
+<Configuration status="info" shutdownHook="disable" monitorInterval="60" >
+    <Appenders>
+        <!-- ************************************************************************** -->
+        <!-- *     SMPPIF_CONSOLE    -   Console Application Messages                    * -->
+        <!-- ************************************************************************** -->
+        <Console name="SMPPIF_CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss,SSS} %c{1} %p - %m%n" />
+        </Console>
+
+        <!-- ************************************************************************** -->
+        <!-- *     SMPPIF_LOG_FILE    -   Application Log File                           * -->
+        <!-- ************************************************************************** -->
+        <RollingFile name="SMPPIF_LOG_FILE" fileName="${sys:SMPPIF_BASE_DIR}/logs/SMPPIF-main.log"
+                     filePattern="${sys:SMPPIF_BASE_DIR}/logs/SMPPIF-main.log.%i"
+                     append="true">
+            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss,SSS} %c{1} %p - %m%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" />
+        </RollingFile>
+
+        <!-- ************************************************************************** -->
+        <!-- *     STATS_PROXY_LOG_FILE    -   SMPPIF Proxy Statistics File              * -->
+        <!-- ************************************************************************** -->
+        <RollingFile name="STATS_PROXY_LOG_FILE" fileName="${sys:SMPPIF_BASE_DIR}/stats/SMPPIF/SMPPIF-stats-proxy.log"
+                     filePattern="${sys:SMPPIF_BASE_DIR}/stats/SMPPIF/SMPPIF-stats-proxy.log-%d{yyyyMMdd}"
+                     append="true">
+            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss.SSS} - %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="14" />
+        </RollingFile>
+
+        <!-- ************************************************************************** -->
+        <!-- *     STATS_LOG_FILE    -   SMPPIF Proxy Statistics File (per ESME/SMSC)              * -->
+        <!-- ************************************************************************** -->
+        <RollingFile name="STATS_LOG_FILE" fileName="${sys:SMPPIF_BASE_DIR}/stats/SMPPIF/SMPPIF-stats-esme-smsc.log"
+                     filePattern="${sys:SMPPIF_BASE_DIR}/stats/SMPPIF/SMPPIF-stats-esme-smsc.log-%d{yyyyMMdd}"
+                     append="true">
+            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss.SSS} - %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="14" />
+        </RollingFile>
+
+        <!-- ************************************************************************** -->
+        <!-- *     STATS_SYSID_LOG_FILE    -   SMPPIF Proxy Statistics File (per ESME_SYSTEMID/SMSC_SYSTEMID)              * -->
+        <!-- ************************************************************************** -->
+        <RollingFile name="STATS_SYSID_LOG_FILE" fileName="${sys:SMPPIF_BASE_DIR}/stats/SMPPIF/SMPPIF-stats-sys-id.log"
+                     filePattern="${sys:SMPPIF_BASE_DIR}/stats/SMPPIF/SMPPIF-stats-sys-id.log-%d{yyyyMMdd}"
+                     append="true">
+            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss.SSS} - %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="14" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- SMPPIF Proxy Statistics -->
+        <logger name="STATS.SMPPIF" level="info" additivity="false">
+            <AppenderRef ref="STATS_PROXY_LOG_FILE" />
+        </logger>
+
+        <!-- SMPPIF Proxy Statistics -->
+        <logger name="STATS.SMPPIFESMESMSC" level="info" additivity="false">
+            <AppenderRef ref="STATS_LOG_FILE" />
+        </logger>
+
+        <!-- SMPPIF Proxy Statistics -->
+        <logger name="STATS.SMPPIFSYSID" level="info" additivity="false">
+            <AppenderRef ref="STATS_SYSID_LOG_FILE" />
+        </logger>
+
+        <!-- SMPPIF module -->
+        <logger name="com.evolvedintelligence.engine.smppif" level="info" additivity="false">
+            <AppenderRef ref="SMPPIF_LOG_FILE" />
+        </logger>
+
+        <!-- All other Evolved Intelligence modules -->
+        <logger name="com.evolvedintelligence.engine" level="info" additivity="false">
+            <AppenderRef ref="SMPPIF_LOG_FILE" />
+        </logger>
+
+        <!-- Default rule for all classes -->
+        <Root level="info">
+            <AppenderRef ref="SMPPIF_LOG_FILE" />
+        </Root>
+    </Loggers>
+
+</Configuration>

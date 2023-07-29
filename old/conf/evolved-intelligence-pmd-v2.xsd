@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns="http://www.evolved-intelligence.com/pmd/version2"
+                xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                targetNamespace="http://www.evolved-intelligence.com/pmd/version2"
+                attributeFormDefault="unqualified"
+                elementFormDefault="qualified">
+
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+
+    <xsd:annotation>
+        <xsd:documentation><![CDATA[
+    Evolved Intelligence PMD Schema, version 2.0
+    Author: Dave Williams
+        ]]></xsd:documentation>
+    </xsd:annotation>
+
+    <!-- ===================================================
+         == Top level doc definition                      ==
+         =================================================== -->
+    <xsd:element name="pmd"  type="pmdType"/>
+
+    <!-- ===================================================
+         == PMD type                                      ==
+         =================================================== -->
+    <xsd:complexType name="pmdType">
+        <xsd:sequence>
+            <xsd:choice minOccurs="0" maxOccurs="unbounded">
+                <xsd:element name="settings"          type="globalSettingsType"/>
+                <xsd:element name="globalsettings"    type="globalSettingsType"/>
+                <xsd:element name="globalSettings"    type="globalSettingsType"/>
+                <xsd:element name="group"             type="groupType"/>
+                <xsd:element name="grp"               type="groupType"/>
+                <xsd:element name="process"           type="processType"/>
+                <xsd:element name="proc"              type="processType"/>
+                <xsd:element name="environment"       type="envType"/>
+                <xsd:element name="env"               type="envType"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == Global Settings type                          ==
+         =================================================== -->
+    <xsd:complexType name="globalSettingsType">
+        <xsd:sequence>
+            <xsd:element name="variables"             type="variablesType"       minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:choice minOccurs="0" maxOccurs="1">
+                <xsd:element name="extensionconfigdir"    type="extensionCfgDirType"/>
+                <xsd:element name="extensiondir"          type="extensionCfgDirType"/>
+            </xsd:choice>
+            <xsd:element name="variables"             type="variablesType"       minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="consoleoutputdir"        type="xsd:string"/>
+
+        <xsd:attribute name="snmpname"                                      type="xsd:string"/>
+        <xsd:attribute name="snmpName"                                      type="xsd:string"/>
+        <xsd:attribute name="SNMPName"                                      type="xsd:string"/>
+        <xsd:attribute name="snmphost"                                      type="xsd:string"/>
+        <xsd:attribute name="snmpHost"                                      type="xsd:string"/>
+        <xsd:attribute name="SNMPHost"                                      type="xsd:string"/>
+        <xsd:attribute name="snmpcommunity"                                 type="xsd:string"/>
+        <xsd:attribute name="snmpCommunity"                                 type="xsd:string"/>
+        <xsd:attribute name="SNMPCommunity"                                 type="xsd:string"/>
+        <xsd:attribute name="snmpincludeseverityvarbind"                    type="xsd:boolean"/>
+        <xsd:attribute name="snmpIncludeSeverityVarbind"                    type="xsd:boolean"/>
+        <xsd:attribute name="SNMPIncludeSeverityVarbind"                    type="xsd:boolean"/>
+        <xsd:attribute name="snmpincludenonstandardcommentvarbind"          type="xsd:boolean"/>
+        <xsd:attribute name="snmpIncludeNonStandardCommentVarbind"          type="xsd:boolean"/>
+        <xsd:attribute name="SNMPIncludeNonStandardCommentVarbind"          type="xsd:boolean"/>
+        <xsd:attribute name="snmpgeneratetrapsoncontrolledprocessshutdown"  type="xsd:boolean"/>
+        <xsd:attribute name="snmpGenerateTrapsOnControlledProcessShutdown"  type="xsd:boolean"/>
+        <xsd:attribute name="snmpGenerateTrapsOnControlledProcessShutDown"  type="xsd:boolean"/>
+        <xsd:attribute name="SNMPGenerateTrapsOnControlledProcessShutdown"  type="xsd:boolean"/>
+        <xsd:attribute name="SNMPGenerateTrapsOnControlledProcessShutDown"  type="xsd:boolean"/>
+        <xsd:attribute name="snmpgenerateprocessfailurecleartraps"          type="xsd:boolean"/>
+        <xsd:attribute name="snmpGenerateProcessFailureClearTraps"          type="xsd:boolean"/>
+        <xsd:attribute name="SNMPGenerateProcessFailureClearTraps"          type="xsd:boolean"/>
+        <!-- New for SNMP v3 -->
+        <!-- snmpVersion defaults to v2 -->
+        <xsd:attribute name="snmpVersion"             type="xsd:integer"/>
+        <xsd:attribute name="snmpSecurityName"        type="xsd:string"/>
+        <!-- 1 = NOAUTH_NOPRIV, 2 = AUTH_NOPRIV, 3 = AUTH_PRIV -->
+        <xsd:attribute name="snmpSecurityLevel"       type="xsd:string"/>
+        <!-- NONE, SHA or MD5, defaults to SHA -->
+        <xsd:attribute name="snmpAuthProtocol"        type="xsd:string"/>
+        <!-- NONE, DES, 3DESEDE, IDEA, AES128, AES192 or AES256, defaults to AES256 -->
+        <xsd:attribute name="snmpPrivProtocol"        type="xsd:string"/>
+        <xsd:attribute name="snmpAuthPassword"        type="xsd:string"/>
+        <xsd:attribute name="snmpPrivPassword"        type="xsd:string"/>
+
+        <!-- Hex - eg. 800002b804616263 - 616263 - "ABC" -->
+        <xsd:attribute name="snmpEngineId"            type="xsd:string"/>
+        <!-- ASCII - eg. pmd_at_host -->
+        <xsd:attribute name="snmpContextName"         type="xsd:string"/>
+        <!-- Hex - eg. 800002b804646566 -->
+        <xsd:attribute name="snmpEngineContextId"     type="xsd:string"/>
+    
+        <xsd:attribute name="allowundefinedvariables" type="xsd:boolean"/>
+        <xsd:attribute name="allowundefinedvars"      type="xsd:boolean"/>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == Variables type                                ==
+         =================================================== -->
+    <xsd:complexType name="variablesType">
+        <xsd:sequence>
+            <xsd:element name="var"          type="varType"       minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == Var type                                      ==
+         =================================================== -->
+    <xsd:complexType name="varType">
+        <!-- no use="required" so we allow options -->
+        <!-- The following three attributes are modelled as
+           - a choice in the code.
+          -->
+        <xsd:attribute name="name"    type="xsd:string"/>
+        <xsd:attribute name="id"      type="xsd:string"/>
+        <xsd:attribute name="var"     type="xsd:string"/>
+
+        <!-- The following two attributes are modelled as
+           - a choice in the code.
+          -->
+        <xsd:attribute name="val"     type="xsd:string"/>
+        <xsd:attribute name="value"   type="xsd:string"/>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == extensionCfgDir type                          ==
+         =================================================== -->
+    <xsd:complexType name="extensionCfgDirType">
+        <xsd:sequence>
+            <xsd:element name="excludedfile" type="excludedFileType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <!-- no use="required" so we can support options. -->
+        <xsd:attribute name="val"      type="xsd:string"/>
+        <xsd:attribute name="dir"      type="xsd:string"/>
+        <xsd:attribute name="name"     type="xsd:string"/>
+        <xsd:attribute name="dirname"  type="xsd:string"/>
+        <xsd:attribute name="path"     type="xsd:string"/>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == excludedFile type                             ==
+         =================================================== -->
+    <xsd:complexType name="excludedFileType">
+        <!-- no use="required" so we can support options. -->
+        <xsd:attribute name="val" type="xsd:string"/>
+        <xsd:attribute name="name" type="xsd:string"/>
+        <xsd:attribute name="file" type="xsd:string"/>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == common grp and proc attributes                ==
+         =================================================== -->
+    <xsd:attributeGroup name="commonGrpAndProcAttribs">
+        <xsd:attribute name="cwd"                       type="xsd:string"/>
+        <xsd:attribute name="dir"                       type="xsd:string"/>
+        <xsd:attribute name="directory"                 type="xsd:string"/>
+
+        <xsd:attribute name="importSystemEnvironment"   type="xsd:boolean"/>
+        <xsd:attribute name="importsystemenvironment"   type="xsd:boolean"/>
+        <xsd:attribute name="importSystemEnv"           type="xsd:boolean"/>
+        <xsd:attribute name="importsystemenv"           type="xsd:boolean"/>
+        <xsd:attribute name="importSysEnv"              type="xsd:boolean"/>
+        <xsd:attribute name="importsysenv"              type="xsd:boolean"/>
+
+        <xsd:attribute name="importSystemPath"          type="xsd:boolean"/>
+        <xsd:attribute name="importsystempath"          type="xsd:boolean"/>
+        <xsd:attribute name="importSysPath"             type="xsd:boolean"/>
+        <xsd:attribute name="importsyspath"             type="xsd:boolean"/>
+
+        <xsd:attribute name="path"                      type="xsd:string"/>
+
+        <xsd:attribute name="environment"               type="xsd:string"/>
+        <xsd:attribute name="environ"                   type="xsd:string"/>
+        <xsd:attribute name="env"                       type="xsd:string"/>
+
+        <xsd:attribute name="initialState"              type="iStateValType"/>
+        <xsd:attribute name="initialstate"              type="iStateValType"/>
+        <xsd:attribute name="istate"                    type="iStateValType"/>
+        <xsd:attribute name="i-state"                   type="iStateValType"/>
+    </xsd:attributeGroup>
+
+    <!-- ===================================================
+         == group type                                    ==
+         =================================================== -->
+    <xsd:complexType name="groupType">
+        <xsd:sequence>
+            <xsd:element name="processes"   type="processesType"   minOccurs="1" maxOccurs="1"/>
+        </xsd:sequence>
+        <xsd:attribute name="name"                      type="xsd:string" use="required"/>
+        <xsd:attribute name="lockstep"                  type="xsd:boolean"/>
+        <xsd:attribute name="lockStep"                  type="xsd:boolean"/>
+        <xsd:attribute name="active"                    type="xsd:boolean"/>
+
+        <xsd:attributeGroup ref="commonGrpAndProcAttribs"/>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == processes type                                ==
+         =================================================== -->
+    <xsd:complexType name="processesType">
+        <xsd:sequence>
+            <xsd:element name="process" type="processRefType" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == processRef type                               ==
+         =================================================== -->
+    <xsd:complexType name="processRefType">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == process type                                  ==
+         =================================================== -->
+    <xsd:complexType name="processType">
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+            <xsd:choice>
+                <!-- environment inlined in process definition -->
+                <xsd:element name="enventry"         type="varType" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="envEntry"         type="varType" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="environmentEntry" type="varType" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="environmententry" type="varType" minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- Process arguments -->
+                <xsd:element name="args"             type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="arg"              type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="individualarg"    type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="individual-arg"   type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="singlearg"        type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+                <xsd:element name="single-arg"       type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- Stop policy -->
+                <xsd:element name="stoppolicy"       type="stoppolicyType" minOccurs="0" maxOccurs="1"/>
+                <xsd:element name="stopPolicy"       type="stoppolicyType" minOccurs="0" maxOccurs="1"/>
+            </xsd:choice>
+        </xsd:sequence>
+
+        <xsd:attribute name="name"                      type="xsd:string" use="required"/>
+        <xsd:attribute name="cmd"                       type="xsd:string" use="required"/>
+
+        <xsd:attribute name="stoppolicy"                type="xsd:string"/>
+        <xsd:attribute name="startdelay"                type="xsd:string"/>
+        <xsd:attribute name="maxstartattempts"          type="xsd:integer"/>
+        <xsd:attribute name="priority"                  type="xsd:integer"/>
+
+        <xsd:attributeGroup ref="commonGrpAndProcAttribs"/>
+
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == Stop Policy Type                              ==
+         =================================================== -->
+    <xsd:complexType name="stoppolicyType">
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+            <!-- Policy arguments -->
+            <xsd:element name="args"             type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="arg"              type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="individualarg"    type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="individual-arg"   type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="singlearg"        type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="single-arg"       type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+
+        <xsd:attribute name="name"               type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <!-- ===================================================
+         == iStateVal type                                ==
+         =================================================== -->
+    <xsd:simpleType name="iStateValType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="STARTED"/>
+            <xsd:enumeration value="STOPPED"/>
+            <xsd:enumeration value="started"/>
+            <xsd:enumeration value="stopped"/>
+            <xsd:enumeration value="Started"/>
+            <xsd:enumeration value="Stopped"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- ===================================================securityName
+         == environment type                              ==
+         =================================================== -->
+    <xsd:complexType name="envType">
+        <xsd:sequence>
+            <!-- minOccurs 0 to allow empty environment -->
+            <xsd:element name="entry" type="varType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="name"     type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+</xsd:schema>

@@ -1,0 +1,50 @@
+<hazelcast xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.8.xsd"
+           xmlns="http://www.hazelcast.com/schema/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <group>
+        <name>eiconfig</name>
+        <password>configconfig</password>
+    </group>
+
+    <!--
+    <management-center enabled="true">http://localhost:8080/mancenter</management-center>
+    -->
+
+    <properties>
+        <!-- See: http://docs.hazelcast.org/docs/3.7/manual/html-single/index.html#system-properties -->
+        <property name="hazelcast.socket.bind.any">false</property>
+        <property name="hazelcast.logging.type">log4j</property>
+    </properties>
+
+    <network>
+        <port auto-increment="false" port-count="1">5701</port>
+
+        <join>
+            <multicast enabled="false"/>
+            <tcp-ip enabled="true">
+                <!-- Example -->
+                <!--
+                <member>machine1</member>
+                <member>machine2</member>
+                <member>machine3:5799</member>
+                <member>192.168.1.0-7</member>
+                <member>192.168.1.21</member>
+                If you do not provide ports for the members, Hazelcast
+                automatically tries the ports 5701, 5702, and so on.
+                http://docs.hazelcast.org/docs/3.5/manual/html/tcp.html
+                -->
+                <!-- FIXME -->
+                <member>127.0.0.1:5701</member>
+                <member>127.0.0.1:5702</member>
+                <member>127.0.0.1:5703</member>
+            </tcp-ip>
+            <aws enabled="false"/>
+        </join>
+
+        <interfaces enabled="true">
+            <!-- FIXME -->
+            <interface>127.0.0.1</interface>
+        </interfaces>
+    </network>
+
+</hazelcast>

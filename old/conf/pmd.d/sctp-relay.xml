@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <group name="sctp" importSystemEnvironment="true" lockstep="false">
+        <processes>
+            <process name="relay"/>
+        </processes>
+    </group>
+
+    <process name="relay" cmd="sctp_relay"
+             path="/opt/engine/bin"
+             dir="/opt/engine/bin" >
+        <args>../conf/sctp-relay.cfg</args>
+
+        <envEntry var="LD_LIBRARY_PATH" val="/usr/lib64:/opt/engine/lib64" />
+        <envEntry var="DLVL_sctp_relay" val="0"/>
+        <envEntry var="DLOG_sctp_relay" val="/opt/engine/logs/sctp-relay.log"/>
+    </process>
+
+</pmd>

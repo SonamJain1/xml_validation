@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <!-- <settings snmphost="localhost"> -->
+    <settings>
+        <variables>
+            <var name="M3UA0_DEBUG_LEVEL"    val="513"/>
+            <var name="SCCP0_DEBUG_LEVEL"    val="0"/>
+            <var name="ISUP0_DEBUG_LEVEL"    val="0"/>
+            <var name="SIF_DEBUG_LEVEL"      val="0"/>
+            <var name="MGMT_DEBUG_LEVEL"     val="0"/>
+            <var name="SECURITY_DEBUG_LEVEL" val="0"/>
+
+            <var name="NGN_LOG_DIR"          val="/opt/NGNTdapi/Logs"/>
+
+            <var name="ENGINE_BASE"          val="/opt/engine"/>
+            <var name="ENGINE_LOG_DIR"       val="${ENGINE_BASE}/logs"/>
+            <var name="ENGINE_CONF_DIR"      val="${ENGINE_BASE}/conf"/>
+
+            <var name="SECURITY_HOSTPORT"    val="127.0.0.1:9100"/>
+        </variables>
+        <!--
+        <extensionconfigdir dir="${ENGINE_CONF_DIR}/pmd.d">
+            <excludedfile val="ld.xml"/>
+        </extensionconfigdir>
+        -->
+    </settings>
+
+    <group name="ss7" lockstep="true" active="true">
+        <processes>
+            <process name="m3ua_0"/>
+            <process name="sccp_0"/>
+            <process name="isup_0"/>
+            <process name="sif"/>
+            <process name="mgmt"/>
+            <process name="securityapp"/>
+        </processes>
+    </group>
+
+    <process name="m3ua_0"  cmd="m3uaStack">
+        <args>-d${M3UA0_DEBUG_LEVEL} -f${NGN_LOG_DIR}/m3ua_0.log -maint maint:127.0.0.1:4000 -user tcap_0::3020</args>
+        <args>-appId m3ua_0 -security security:${SECURITY_HOSTPORT} -loadshareCyclic</args>
+        <args>-allwaysNotifyDestStatus -aspIdOfs+2 -aliasPointCode 196866 -ASPUpAckWithNoId</args>
+    </process>
+
+    <process name="sccp_0"  cmd="sccpStack">
+        <args>-d${SCCP0_DEBUG_LEVEL} -f${NGN_LOG_DIR}/tcap_0.log -telnetport 7654 -p ITU -xudt</args>
+        <args>-mtpl3 etsi_mtpl3_0:127.0.0.1:3020 -user ::3090 -appId tcap_0</args>
+        <args>-ui_encode -no_opId -noTdapiMod -selectEntityOnSSN -lastDestOnGt</args>
+        <args>-segmentBytes 0 -security :${SECURITY_HOSTPORT} -logsize 10485760 -logcount 10</args>
+    </process>
+
+    <process name="isup_0"  cmd="isupStack" istate="STOPPED">
+        <args>-f ${NGN_LOG_DIR}/isup_0.log -d${ISUP0_DEBUG_LEVEL} -apiversion 1 -allow_all_digits -idle -protocol ETSI</args>
+        <args>-appId isup_0 -mnt :127.0.0.1:4000 -mtp :127.0.0.1:3020 -callctrl ::3030</args>
+        <args>-sclient :${SECURITY_HOSTPORT}</args>
+    </process>
+
+    <process name="sif"   cmd="sif">
+        <args>${ENGINE_CONF_DIR}/sif.cfg</args>
+
+        <envEntry var="DLVL_sif" val="${SIF_DEBUG_LEVEL}"/>
+        <envEntry var="DLOG_sif" val="${ENGINE_LOG_DIR}/sif.log"/>
+    </process>
+
+    <process name="mgmt"  cmd="mgmt-daemon">
+        <args>-a 62777 ${ENGINE_CONF_DIR}/mgmt_daemon.cfg</args>
+
+        <envEntry var="DLVL_mgmt_daemon" val="${MGMT_DEBUG_LEVEL}"/>
+        <envEntry var="DLOG_mgmt_daemon" val="${ENGINE_LOG_DIR}/mgmt_daemon.log"/>
+    </process>
+
+    <process name="securityapp" cmd="security" startdelay="2200ms">
+        <args>${ENGINE_CONF_DIR}/security.cfg</args>
+
+        <envEntry var="DLOG_security" val="${ENGINE_LOG_DIR}/security.log"/>
+        <envEntry var="DLVL_security" val="${SECURITY_DEBUG_LEVEL}"/>
+    </process>
+
+</pmd>

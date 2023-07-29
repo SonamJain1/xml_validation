@@ -1,0 +1,27 @@
+#################
+# EDR management
+#################
+
+#  FIXME - RabbitMQ connection details.
+# EdrClientEnabled = false
+# EdrClientConnection = app1:5672
+# EdrClientConnection = app2:5672
+# EdrClientConnection = app3:5672
+
+EdrClientUsername = engine
+EdrClientPassword = engine
+EdrClientExchange = ENGINE_EDR
+
+# Defaults to 0 (which is disabled).
+# The RabbitMQ server will close the TCP connection to the client if
+# it receives no AMQP messages in 3 times the duration specified in this interval.
+# EdrClientAMQPHeartbeatInterval = 60secs
+
+EdrClientBackupFile = /opt/engine/data/edr/sctp-relay-fail-safe-edr
+# Default is 1MB
+# EdrClientBackupFileMaxSize = 20MB
+# Default is 60secs
+# EdrClientReconnectAttemptIntervalSeconds = 5sec
+
+DecodeEdrsEnabled = false
+WriteEdrWhenAppOverloaded = false

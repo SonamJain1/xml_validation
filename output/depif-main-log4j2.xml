@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright Mobileum  2021. This program must not be used
+  ~ for any purpose without written permission from Mobileum.
+  ~ http://www.mobileum.com/
+  -->
+
+<Configuration status="info" shutdownHook="disable" monitorInterval="60" >
+    <Appenders>
+        <!-- ************************************************************************** -->
+        <!-- *     DEPIF_CONSOLE    -   Console Application Messages                    * -->
+        <!-- ************************************************************************** -->
+        <Console name="DEPIF_CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss,SSS} %c{1} %p - %m%n" />
+        </Console>
+
+        <!-- ************************************************************************** -->
+        <!-- *     DEPIF_LOG_FILE    -   Application Log File                           * -->
+        <!-- ************************************************************************** -->
+        <RollingFile name="DEPIF_LOG_FILE" fileName="${sys:DEPIF_BASE_DIR}/logs/depif-main.log"
+                     filePattern="${sys:DEPIF_BASE_DIR}/logs/depif-main.log.%i"
+                     append="true">
+            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss,SSS} %c{1} %p - %m%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" />
+        </RollingFile>
+
+        <!-- ************************************************************************** -->
+        <!-- *     STATS_LOG_FILE    -   DEPIF Statistics File              * -->
+        <!-- ************************************************************************** -->
+        <RollingFile name="STATS_DEPIF_LOG_FILE" fileName="${sys:DEPIF_BASE_DIR}/stats/DEPIF/DEPIF-stats-proxy.log"
+                     filePattern="${sys:DEPIF_BASE_DIR}/stats/DEPIF/DEPIF-stats-proxy.log-%d{yyyyMMdd}"
+                     append="true">
+            <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss.SSS} - %m%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- Statistics -->
+        <logger name="STATS.DEPIF" level="info" additivity="false">
+            <AppenderRef ref="STATS_DEPIF_LOG_FILE" />
+        </logger>
+
+        <!-- DEPIF module -->
+        <logger name="com.evolvedintelligence.engine.depif" level="debug" additivity="false">
+            <AppenderRef ref="DEPIF_LOG_FILE" />
+        </logger>
+
+        <!-- All other Evolved Intelligence modules -->
+        <logger name="com.evolvedintelligence.engine" level="info" additivity="false">
+            <AppenderRef ref="DEPIF_LOG_FILE" />
+        </logger>
+
+        <!-- Default rule for all classes -->
+        <Root level="info">
+            <AppenderRef ref="DEPIF_LOG_FILE" />
+        </Root>
+    </Loggers>
+
+</Configuration>

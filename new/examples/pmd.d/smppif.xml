@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+
+    <settings>
+        <variables>
+            <var name="SMPPIF_BASE" val="/opt/engine" />
+        </variables>
+    </settings>
+
+    <group name="smpp"
+           path="${JAVA8_HOME}/bin"
+           dir="/opt/engine/bin">
+        <processes>
+            <process name="smppif"/>
+        </processes>
+    </group>
+
+    <process name="smppif"
+             importSystemEnvironment="true"
+             cmd="./start-smppif.sh">
+        <envEntry var="SMPPIF_JAVA_XMS_ARG"      val="1024m"/>
+        <envEntry var="SMPPIF_JAVA_XMX_ARG"      val="1024m"/>
+        <envEntry var="SMPPIF_BASE_DIR"          val="${SMPPIF_BASE}"/>
+        <envEntry var="SMPPIF_NODE_ID"             val="nif01"/>
+        <envEntry var="SMPPIF_INSTANCE_ID"         val="01"/>
+        <envEntry var="SMPPIF_EWOK_NODE_ID"        val="4020"/>
+    </process>
+
+</pmd>

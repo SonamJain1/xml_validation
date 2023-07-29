@@ -1,0 +1,62 @@
+template header
+ruleType
+ruleId
+name
+version
+ruleCategory
+ruleSubcategory
+evaluationRule
+actionId
+ruleFlowGroup
+enabled
+salience
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterAvp;
+import java.util.List;
+
+template "diameter_spoofing_check_rule"
+
+rule "Diameter_Spoofing_Check_Rule(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message
+        //
+        // Note the route record AVP code is 282, vendor id 0
+        //
+        $msg : DiameterMessage(
+                   isRequest() == true,
+                   $originHost : originHost != null,
+                   $originHost.getName() != null,
+                   $routeRecordList : getAvp( 282, 0 ) != null,
+                   $routeRecordList.isEmpty() == false,
+                   $tenant : tenant != null &&
+                   $tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true)
+
+        // Get the the first route record AVP
+        $firstRouteRecord : DiameterAvp() from $routeRecordList.get(0)
+
+        // Does it match the origin host (ignoring case)
+        eval ($originHost.getName().equalsIgnoreCase($firstRouteRecord.getDataAsString()) != true)
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( $results.getIsAllowed() )
+        {
+            modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                      "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule},
+                                       $firstRouteRecord) };
+        }
+end
+
+end template

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <!-- <settings snmphost="localhost"> -->
+    <settings>
+        <variables>
+            <var name="GROUP" val="ss7"/>
+            <var name="M3UA"  val="m3ua_0"/>
+            <var name="ISUP"  val="isup_0"/>
+            <var name="SCCP"  val="sccp_0"/>
+            <var name="SIF"   val="sif"/>
+            <var name="MGMT"  val="mgmt"/>
+            <var name="CCURE" val="securityapp"/>
+        </variables>
+
+        <!--
+        <extensionconfigdir dir="/opt/engine/conf/pmd.d">
+            <excludedfile val="ld.xml"/>
+        </extensionconfigdir>
+        -->
+    </settings>
+
+    <group name="${GROUP}" lockstep="true" active="true">
+        <processes>
+            <process name="${M3UA}"/>
+            <process name="${SCCP}"/>
+            <process name="${ISUP}"/>
+            <process name="${SIF}"/>
+            <process name="${MGMT}"/>
+            <process name="${CCURE}"/>
+        </processes>
+    </group>
+
+    <process name="${M3UA}"  cmd="m3uaStack0.sh"/>
+    <process name="${ISUP}"  cmd="isupStack.sh" istate="STOPPED"/>
+    <process name="${SCCP}"  cmd="sccpStack0.sh"/>
+    <process name="${SIF}"   cmd="sif.sh"/>
+    <process name="${MGMT}"  cmd="mgmt-daemon.sh"/>
+    <process name="${CCURE}" cmd="security.sh"/>
+
+</pmd>

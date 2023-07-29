@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <group name="ss7" importSystemEnvironment="true" lockstep="true">
+        <processes>
+            <process name="m3ua_0"/>
+            <process name="sccp_0"/>
+            <process name="sif"/>
+            <process name="mgmt"/>
+        </processes>
+    </group>
+
+    <process name="m3ua_0" cmd="/opt/engine/bin/m3uaStack0.sh" />
+    <process name="sccp_0" cmd="/opt/engine/bin/sccpStack0.sh" />
+    <process name="sif"    cmd="/opt/engine/bin/sif.sh" />
+    <process name="mgmt"   cmd="/opt/engine/bin/mgmt-daemon.sh" />
+
+</pmd>

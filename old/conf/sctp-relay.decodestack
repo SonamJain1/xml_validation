@@ -1,0 +1,11 @@
+######################
+# Supported Protocols
+######################
+
+# Can be RFC4165 or Draft-V2
+M2PAVariant = RFC4165
+
+# ITU/ANSI
+MTP3Variant = ITU
+SCCPVariant = ITU
+SCCPReassemblyTimeout = 200ms

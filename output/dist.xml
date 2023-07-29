@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <var name="DIST_BASE"       val="/opt/dist" />
+            <var name="DIST_GRP_NAME"   val="dist" />
+            <var name="DIST_PROC_NAME"  val="dist" />
+        </variables>
+    </settings>
+
+    <group name="${DIST_GRP_NAME}">
+        <processes>
+            <process name="${DIST_PROC_NAME}"/>
+        </processes>
+    </group>
+
+    <process name="${DIST_PROC_NAME}"
+             path="${DIST_BASE}/bin"
+             dir="${DIST_BASE}/bin"
+             cmd="./dist">
+
+        <args>${DIST_BASE}/conf/dist.cfg</args>
+
+        <envEntry var="DB_PRINT" val="0"/>
+        <envEntry var="DB_COMPDEBUG" val="0"/>
+        <!-- <envEntry var="DB_MAXLOGSIZE" val="60MB"/> -->
+        <envEntry var="DLVL_dist" val="0"/>
+        <envEntry var="DLOG_dist" val="${DIST_BASE}/logs/dist.log"/>
+        <!-- Currently we configure dist with component level debugging disabled.  -->
+        <!-- <envEntry var="DCFG_dist" val="${DIST_BASE}/conf/dist_log.cfg"/> -->
+    </process>
+
+</pmd>

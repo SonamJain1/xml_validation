@@ -1,0 +1,69 @@
+template header
+ruleType
+ruleId
+name
+version
+hasCommandCriteria
+applicationId
+commandCode
+hasOperatorCriteria
+operator
+hasOperatorGroupCriteria
+operatorGroup
+ruleFlowGroup
+salience
+hasApplicabilityCriteria
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+
+template "diameter_service_pertinence_rule"
+
+rule "DiameterServicePertinenceRule(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message
+        DiameterMessage( isRequest() == true,
+                         $tenant : tenant != null,
+
+                         // If the rule has a command criteria then check if this message matches that criteria
+                         ( @{hasCommandCriteria} == false ||
+                           ( applicationId == @{applicationId} && commandCode == @{commandCode} ) ),
+
+                         // If the rule has a operator criteria  then check this message matches that criteria
+                         // Note is the operator determined from the origin realm is null we also consider the
+                         // operator as matching the rule so that the rule can handle this potential error case.
+                         ( @{hasOperatorCriteria} == false ||
+                           ( originRealm == null ||
+                             originRealm.operator == null ||
+                             "@{operator}".equals( originRealm.operator.id ) ) ),
+
+                         // If the rule has a operatorGroup criteria then check that the operator belongs to
+                         // the operatorGroup
+                         ( @{hasOperatorGroupCriteria} == false ||
+                           ( originRealm == null ||
+                             originRealm.operator == null ||
+                            tenant.sameOperator(originRealm, true, "@{operatorGroup}" ) == true ) ),
+
+                         // If the rule has a applicability criteria then check if this message matches that criteria
+                         ( @{hasApplicabilityCriteria} == false ||
+                           tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true ) )
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( $results.getIsAllowed() )
+        {
+            modify( $results )  { addSendToServiceResult("@{ruleId}", @{ruleType}) };
+        }
+end
+
+end template

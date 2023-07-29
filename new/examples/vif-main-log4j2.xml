@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="info" shutdownHook="disable" monitorInterval="60" >
+<Appenders>
+    <!-- ************************************************************************** -->
+    <!-- *     VIF_CONSOLE    -   Console Application Messages                    * -->
+    <!-- ************************************************************************** -->
+    <Console name="VIF_CONSOLE" target="SYSTEM_OUT">
+        <PatternLayout pattern="%d{HH:mm:ss,SSS} %c{1} %p - %m%n" />
+    </Console>
+
+    <!-- ************************************************************************** -->
+    <!-- *     VIF_LOG_FILE    -   Application Log File                           * -->
+    <!-- ************************************************************************** -->
+    <RollingFile name="VIF_LOG_FILE" fileName="${sys:VIF_BASE_DIR}/logs/vif-main.log"
+        filePattern="${sys:VIF_BASE_DIR}/logs/vif-main.log.%i"
+        append="true">
+        <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss,SSS} %c{1} %p - %m%n" />
+        <Policies>
+            <SizeBasedTriggeringPolicy size="20MB" />
+        </Policies>
+        <DefaultRolloverStrategy max="20" />
+    </RollingFile>
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS_PROXY_LOG_FILE    -   VIF Proxy Statistics File              * -->
+    <!-- ************************************************************************** -->
+    <RollingFile name="STATS_PROXY_LOG_FILE" fileName="${sys:VIF_BASE_DIR}/stats/vif/vif-stats-proxy.log"
+        filePattern="${sys:VIF_BASE_DIR}/stats/vif/vif-stats-proxy.log-%d{yyyyMMdd}"
+        append="true">
+        <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss.SSS} - %m%n" />
+        <Policies>
+            <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+        </Policies>
+        <DefaultRolloverStrategy max="14" />
+    </RollingFile>
+
+    <!-- ************************************************************************** -->
+    <!-- *     STATS_MESSAGE_LOG_FILE    -   VIF Message Statistics File              * -->
+    <!-- ************************************************************************** -->
+    <RollingFile name="STATS_MESSAGE_LOG_FILE" fileName="${sys:VIF_BASE_DIR}/stats/vif/SIPMESSAGE-stats.log"
+        filePattern="${sys:VIF_BASE_DIR}/stats/vif/SIPMESSAGE-stats.log-%d{yyyyMMdd}.%i"
+        append="true">
+        <PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss.SSS} - %m%n" />
+        <Policies>
+            <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            <SizeBasedTriggeringPolicy size="20MB" />
+        </Policies>
+        <DefaultRolloverStrategy max="14" />
+    </RollingFile>
+</Appenders>
+
+<Loggers>
+    <!-- VIF Proxy Statistics -->
+    <logger name="STATS.PROXY" level="info" additivity="false">
+        <AppenderRef ref="STATS_PROXY_LOG_FILE" />
+    </logger>
+    <!-- VIF Message Statistics -->
+    <logger name="STATS.VIFMESSAGE" level="info" additivity="false">
+        <AppenderRef ref="STATS_MESSAGE_LOG_FILE" />
+    </logger>
+
+    <!-- VIF Plugin -->
+    <logger name="com.evolvedintelligence.engine.plugin_name" level="info" additivity="false">
+        <AppenderRef ref="VIF_LOG_FILE" />
+    </logger>
+
+    <!-- VIF module -->
+    <logger name="com.evolvedintelligence.engine.vif" level="info" additivity="false">
+        <AppenderRef ref="VIF_LOG_FILE" />
+    </logger>
+
+    <!-- All other Evolved Intelligence modules -->
+    <logger name="com.evolvedintelligence.engine" level="info" additivity="false">
+        <AppenderRef ref="VIF_LOG_FILE" />
+    </logger>
+
+    <!-- Jain SIP modules -->
+    <!-- Jain SIP info logs should be disabled by default -->
+
+    <logger name="gov.nist.javax.sip" level="error" additivity="false">
+        <AppenderRef ref="VIF_LOG_FILE" />
+    </logger>
+
+    <logger name="javax.sip" level="error" additivity="false">
+        <AppenderRef ref="VIF_LOG_FILE" />
+    </logger>
+
+    <!-- Default rule for all classes -->
+    <Root level="error">
+        <AppenderRef ref="VIF_LOG_FILE" />
+    </Root>
+
+
+</Loggers>
+
+</Configuration>

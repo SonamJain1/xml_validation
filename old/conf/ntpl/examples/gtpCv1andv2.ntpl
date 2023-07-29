@@ -1,0 +1,11 @@
+Setup[TxDescriptor=Dyn;TxPorts=6;TxIgnorePos=42;UseWL=True] = StreamId == 1
+
+Retransmit [SourcePort = 5; DestinationPort = 6] = Layer4Protocol != UDP OR \
+                                                   TunnelType != GTPv1v2-c
+
+# Offset0 = IPv4 header
+# Offset1 = GTP packet start
+Assign[StreamId=1;Descriptor=Dyn3,Offset0=Layer3Header[0],Offset1=Layer4Payload[0]] = Port == 5 AND \
+                                                                                      Layer4Protocol == UDP AND \
+                                                                                      TunnelType == GTPv1v2-C
+

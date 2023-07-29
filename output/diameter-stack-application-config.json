@@ -1,0 +1,52 @@
+{
+    "hostName": "diameter-proxy",
+    "realm": "middle.realm.org",
+    "supportedApplications": [
+        {
+            "vendorId": 10415,
+            "authApplicationId": 16777251,
+            "acctApplicationId": 0
+        }
+    ],
+    "peerConfig": [
+        {
+            "hostId": "diameter-client",
+            "ipAddress": "diameter-client",
+            "initiateConnection": false
+        },
+        {
+            "hostId": "diameter-server",
+            "ipAddress": "diameter-server",
+            "initiateConnection": true,
+            "port": 3869,
+            "minHostPortRange": 3000,
+            "maxHostPortRange": 4000
+        }
+    ],
+    "routingConfig": [
+        {
+            "hostId": "diameter-client",
+            "primaryIpAddress": "diameter-client",
+            "realmName": "default",
+            "applicationId": {
+                "vendorId": 10415,
+                "authApplicationId": 16777251,
+                "acctApplicationId": 0
+            },
+            "realmPeerPriority": 1
+        },
+        {
+            "hostId": "diameter-server",
+            "primaryIpAddress": "diameter-server",
+            "realmName": "default",
+            "applicationId": {
+                "vendorId": 10415,
+                "authApplicationId": 16777251,
+                "acctApplicationId": 0
+            },
+            "realmPeerPriority": 1
+        }
+    ],
+    "peerNodeSelectionPolicy": "ROUNDROBIN",
+    "localAction": "PROXY"
+}

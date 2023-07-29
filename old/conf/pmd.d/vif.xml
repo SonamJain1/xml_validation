@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+
+    <settings>
+        <variables>
+            <var name="VIF_BASE" val="/opt/engine" />
+            <!-- The VIF has to be in the same process group as the sip watchdog passive monitor -->
+            <var name="VIF_GRP_NAME"      val="sip" />
+            <var name="VIF_PROC_NAME"     val="vif" />
+        </variables>
+    </settings>
+
+    <group name="${VIF_GRP_NAME}">
+        <processes>
+            <process name="${VIF_PROC_NAME}"/>
+        </processes>
+    </group>
+
+    <process name="${VIF_PROC_NAME}"
+             path="${VIF_BASE}/bin"
+             dir="${VIF_BASE}/bin"
+             cmd="./start-vif.sh">
+        <envEntry var="VIF_JAVA_XMS_ARG"      val="1024m"/>
+        <envEntry var="VIF_JAVA_XMX_ARG"      val="1024m"/>
+        <envEntry var="VIF_BASE_DIR"          val="${VIF_BASE}"/>
+        <envEntry var="VIF_STACK_CONFIG_FILE" val="${VIF_BASE}/conf/sip-stack-config.json"/>
+        <envEntry var="VIF_STACK_APPLICATION_CONFIG_FILE" val="${VIF_BASE}/conf/sip-application-config.json"/>
+        <envEntry var="VIF_HEADER_CONFIG_FILE" val="${VIF_BASE}/conf/header.json"/>
+    </process>
+
+</pmd>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 
+    http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+
+    <settings>
+        <variables>
+            <var name="DIF_BASE" val="/opt/engine"/>
+            <!-- The DIF has to be in the same process group as the diameter watchdog passive monitor -->
+            <var name="DIF_GRP_NAME" val="diameter"/>
+            <var name="DIF_PROC_NAME" val="dif"/>
+        </variables>
+    </settings>
+
+    <group name="${DIF_GRP_NAME}">
+        <processes>
+            <process name="${DIF_PROC_NAME}"/>
+        </processes>
+    </group>
+
+    <process name="${DIF_PROC_NAME}" path="${DIF_BASE}/bin" dir="${DIF_BASE}/bin" cmd="./start-diameterfw-dif.sh">
+        <envEntry var="DIF_JAVA_XMS_ARG" val="1024m"/>
+        <envEntry var="DIF_JAVA_XMX_ARG" val="1024m"/>
+        <envEntry var="DIF_BASE_DIR" val="${DIF_BASE}"/>
+        <envEntry var="DIF_TECH_ID" val="diameterfw"/>
+        <envEntry var="DIF_NODE_ID" val="app01"/>
+        <envEntry var="DIF_INSTANCE_ID" val="01"/>
+        <envEntry var="DIF_STACK_CONFIG_FILE" val="${DIF_BASE}/conf/diameter-stack-sctp-config.json"/>
+        <envEntry var="DIF_STACK_APPLICATION_CONFIG_FILE" val="${DIF_BASE}/conf/diameter-stack-application-config.json"/>
+        <envEntry var="DIF_TRUSTSTORE_PATH" val="${DIF_BASE}/mytruststore.jks"/>
+    </process>
+
+</pmd>

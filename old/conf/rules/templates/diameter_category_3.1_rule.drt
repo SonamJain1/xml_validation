@@ -1,0 +1,84 @@
+template header
+ruleType
+ruleId
+name
+version
+ruleCategory
+ruleSubcategory
+evaluationRule
+applicationId
+commandCode
+actionId
+ruleFlowGroup
+salience
+applyActionToSubscribersWithUnknownLocation
+systemStartupPeriodSeconds
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import java.util.Objects;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+
+template "diameter_category_3.1_rule"
+
+rule "DiameterCategory3_1_Rule_(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message (Note the rule is only applicable to requests)
+        DiameterMessage( isRequest() == true,
+                         applicationId == @{applicationId},
+                         commandCode == @{commandCode},
+                         isRequest() == true,
+                         $originRealm : originRealm != null,
+                         $tenant : tenant != null,
+                         $sub : subscriber != null,
+                         tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true )
+
+
+        // Only execute the rule if we have a current connection to an active subscriber store
+        eval ( $sub.getSubscriberStoreActive() )
+
+        // Rule fails if:
+        //
+        //   1, The IMSI of the subscriber is known
+        //
+        //   2, Subscriber as identified by the IMSI is not a Tenant subscriber
+        //
+        // ...or...
+        //
+        //   3, The location of the subscriber as determined from the origination realm
+        //       of the message matches their last verified location (if known) - taking into account any
+        //       shared networks setup for the origination realm
+        //
+        // ...or...
+        //
+        //   4, The location of the subscriber is unknown and the subscriber location store is old     *** AND ***
+        //      .... the rule has been configured to fail if the subscriber location is unknown
+
+        eval ( $sub.getImsi() != null )
+
+
+        eval ( (!$tenant.isTenantSubscriber($sub.getImsi())) ||
+               ($sub.getCurrentOperator() != null && !$tenant.operatorSharesOriginationRealm($sub.getCurrentOperator(), $originRealm)) ||
+               (@{applyActionToSubscribersWithUnknownLocation} && $sub.currentOperatorUnknownAndLocationStoreOld( @{systemStartupPeriodSeconds} ) ) )
+
+    then
+
+        // Only record the failure if the message is not already blocked
+        if ( ! $results.getIsExplicitlyBlocked() )
+        {
+            modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                      "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule}) };
+        }
+end
+
+end template

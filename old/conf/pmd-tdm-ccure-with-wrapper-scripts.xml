@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName"
+			value="SYSTEM_PROPERTIES_MODE_FALLBACK" />
+		<property name="searchSystemEnvironment" value="true" />
+	</bean>
+	
+	<!--
+		The root of the pmd configuration. Defines the process groups to be run.
+	-->
+
+	<bean id="pmdConfiguration"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdConfiguration"
+		init-method="validateSpringConfiguration">
+		<property name="importSystemPath" value="true" />
+		<property name="importSystemEnvironment" value="true" />
+		<property name="processGroups">
+			<set>
+				<value>ss7</value>
+				<!-- <value>ld</value> -->
+				<!-- <value>ss7_app</value> -->
+			</set>
+		</property>
+		<property name="directory" value="${ENGINE_BASEDIR}" />
+	</bean>
+
+	<!--
+		Process group "ss7"
+		
+		The Telesoft stack process.
+	-->
+
+	<bean id="ss7"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcessGroup"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="ss7" />
+		<property name="priority" value="1" />
+		<property name="lockStep" value="true" />
+		<property name="processes">
+			<set>
+				<value>hostware</value>
+				<value>ngnserver</value>
+				<value>mtpl3_0</value>
+				<value>mtpl3_1</value>
+				<value>tcap_0</value>
+				<value>tcap_1</value>
+				<value>isup_0</value>
+				<value>sif</value>
+				<value>mgmt</value>
+				<value>securityapp</value>
+			</set>
+		</property>
+	</bean>
+
+	<bean name="hostware"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="hostware" />
+		<property name="command" value="hostware.sh" />
+	</bean>
+	
+	<bean name="ngnserver"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="ngnserver" />
+		<property name="command" value="NGNServer.sh" />
+	</bean>
+
+	<bean name="mtpl3_0"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="mtpl3_0" />
+		<property name="command" value="mtpStack0.sh" />
+	</bean>
+
+	<bean name="mtpl3_1"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="mtpl3_1" />
+		<property name="command" value="mtpStack1.sh" />
+	</bean>
+
+	<bean name="tcap_0"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="tcap_0" />
+		<property name="command" value="sccpStack0.sh" />
+	</bean>
+
+	<bean name="tcap_1"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="tcap_1" />
+		<property name="command" value="sccpStack1.sh" />
+	</bean>
+
+	<bean name="isup_0"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="isup_0" />
+		<property name="command" value="isupStack.sh" />
+	</bean>
+	<bean name="securityapp"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="securityapp" />
+		<property name="command" value="security.sh" />
+	</bean>
+	
+	<!--
+		Process group "ss7_app"
+		
+		The ENGINE SIF application sitting on top of the stack, sending requests to the load director.
+		
+		Need to find out the name of the SIF application and what command line parameters it might require.
+	-->
+
+	<bean id="ss7_app"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcessGroup"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="sif_app" />
+		<property name="priority" value="3" />
+		<property name="processes">
+			<set>
+				<value>sif</value>
+				<value>mgmt</value>			
+			</set>
+		</property>
+	</bean>
+
+	<bean name="sif"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="sif" />
+		<property name="command" value="sif.sh" />
+	</bean>
+	
+	<bean name="mgmt"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="mgmt" />
+		<property name="command" value="mgmt-daemon.sh" />
+	</bean>
+
+	<!--
+		Process group "ld"
+		
+		This is the load director group responsible for load balancing requests from the 
+		sif application across the available application nodes.
+	-->
+
+	<bean id="ld"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcessGroup"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="ld" />
+		<property name="priority" value="1" />
+		<property name="processes">
+			<set>
+				<value>loaddirector</value>
+			</set>
+		</property>
+	</bean>
+
+	<bean name="loaddirector"
+		class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+		init-method="validateSpringConfiguration">
+		<property name="id" value="loaddirector" />
+		<property name="command" value="loaddirector" />
+	</bean>
+
+</beans>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+
+    <bean id="propertyConfigurer"
+        class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName"
+            value="SYSTEM_PROPERTIES_MODE_FALLBACK" />
+        <property name="searchSystemEnvironment" value="true" />
+    </bean>
+    
+    <!--
+        The root of the pmd configuration. Defines the process groups to be run.
+    -->
+
+    <bean id="pmdConfiguration"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdConfiguration"
+        init-method="validateSpringConfiguration">
+        <property name="importSystemPath" value="true" />
+        <property name="importSystemEnvironment" value="true" />
+        <property name="processGroups">
+            <set>
+                <value>ld</value>
+                <value>gw</value>
+            </set>
+        </property>
+        <property name="directory" value="${ENGINE_BASEDIR}" />
+    </bean>
+
+    <!--
+        Process group "ld"
+        
+        This is the load director group responsible for load balancing requests from the 
+        sif application across the available application nodes.
+    -->
+
+    <bean id="ld"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdProcessGroup"
+        init-method="validateSpringConfiguration">
+        <property name="id" value="ld" />
+        <property name="priority" value="1" />
+        <property name="processes">
+            <set>
+                <value>loaddirector</value>
+            </set>
+        </property>
+    </bean>
+
+    <bean id="gw"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdProcessGroup"
+        init-method="validateSpringConfiguration">
+        <property name="id" value="gw" />
+        <property name="priority" value="2" />
+        <property name="processes">
+            <set>
+                <value>smppgateway</value>
+            </set>
+        </property>
+    </bean>
+
+    <bean name="loaddirector"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+        init-method="validateSpringConfiguration">
+        <property name="id" value="loaddirector" />
+        <property name="command" value="loaddirector" />
+    </bean>
+
+    <bean name="smppgateway"
+        class="com.evolvedintelligence.engine.pmd.configuration.PmdProcess"
+        init-method="validateSpringConfiguration">
+        <property name="id" value="smppgateway" />
+        <property name="command" value="smppgateway" />
+    </bean>
+
+</beans>

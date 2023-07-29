@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="info" shutdownHook="disable" monitorInterval="60" >
+	<Appenders>
+
+		<!-- ************************************************************************** -->
+		<!-- *     CONSOLE    -   Application Messages                                * -->
+		<!-- ************************************************************************** -->
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<PatternLayout pattern="%d{HH:mm:ss,SSS} %c{1} %p - %m%n" />
+		</Console>
+
+		<!-- ************************************************************************** -->
+		<!-- *     FILE       -   Application Messages                                * -->
+		<!-- ************************************************************************** -->
+		<RollingFile name="FILE" fileName="target/opt/engine/logs/hzproxyserver.log"
+					 filePattern="target/opt/engine/logs/hzproxyserver.log.%i"
+					 append="true">
+			<PatternLayout pattern="%d{dd/MM/yyyy HH:mm:ss,SSS} %p - %m%n"/>
+			<Policies>
+				<SizeBasedTriggeringPolicy size="10MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="10" />
+		</RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<!-- Specific rule for this module -->
+		<logger name="com.evolvedintelligence.common.proxysrv" level="info" additivity="false">
+			<AppenderRef ref="FILE"/>
+		</logger>
+
+		<!-- Hazelcast -->
+		<logger name="com.hazelcast" level="info" additivity="false">
+			<AppenderRef ref="CONSOLE" />
+		</logger>
+
+		<!-- Default rule for all classes -->
+		<Root level="debug">
+			<AppenderRef ref="FILE"/>
+		</Root>
+	</Loggers>
+</Configuration>

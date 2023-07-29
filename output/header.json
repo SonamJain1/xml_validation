@@ -1,0 +1,184 @@
+{
+    "headerList": [
+        {
+            "statusCode": "400",
+            "Description": "Bad Request",
+            "headers": []
+        },
+        {
+            "statusCode": "403",
+            "Description": "Forbidden",
+            "headers": []
+        },
+        {
+            "statusCode": "404",
+            "Description": "Not Found",
+            "headers": [
+                {
+                    "sipHeaderName": "Retry-After",
+                    "sipHeaderValue": "5s"
+                }
+            ]
+        },
+        {
+            "statusCode": "405",
+            "Description": "Method Not allowed",
+            "headers": [
+                {
+                    "sipHeaderName": "Allow",
+                    "sipHeaderValue": ""
+                }
+            ]
+        },
+        {
+            "statusCode": "413",
+            "Description": "Request Entity Too Large",
+            "headers": []
+        },
+        {
+            "statusCode": "414",
+            "Description": "Request URI Too Long",
+            "headers": []
+        },
+        {
+            "statusCode": "416",
+            "Description": "Unsupported URI Scheme",
+            "headers": []
+        },
+        {
+            "statusCode": "420",
+            "Description": "Bad Extension",
+            "headers": [
+                {
+                    "sipHeaderName": "Unsupported",
+                    "sipHeaderValue": ""
+                }
+            ]
+        },
+        {
+            "statusCode": "421",
+            "Description": "Extension Required",
+            "headers": []
+        },
+        {
+            "statusCode": "422",
+            "Description": "Session Interval Too Small",
+            "headers": [
+                {
+                    "sipHeaderName": "Session-Expires",
+                    "sipHeaderValue": ""
+                }
+            ]
+        },
+        {
+            "statusCode": "423",
+            "Description": "Interval Too Brief",
+            "headers": [
+                {
+                    "sipHeaderName": "Min-Expires",
+                    "sipHeaderValue": ""
+                }
+            ]
+        },
+        {
+            "statusCode": "424",
+            "Description": "Bad Location Information",
+            "headers": []
+        },
+        {
+            "statusCode": "428",
+            "Description": "Use Identity Header",
+            "headers": []
+        },
+        {
+            "statusCode": "436",
+            "Description": "Bad Identity Info",
+            "headers": []
+        },
+        {
+            "statusCode": "438",
+            "Description": "Invalid Identity Header",
+            "headers": []
+        },
+        {
+            "statusCode": "480",
+            "Description": "Temporarily Unavailable",
+            "headers": [
+                {
+                    "sipHeaderName": "Retry-After",
+                    "sipHeaderValue": "5s"
+                }
+            ]
+        },
+        {
+            "statusCode": "481",
+            "Description": "Call/Transaction does not exist",
+            "headers": []
+        },
+        {
+            "statusCode": "482",
+            "Description": "Loop Detected",
+            "headers": []
+        },
+        {
+            "statusCode": "483",
+            "Description": "Too Many Hops",
+            "headers": []
+        },
+        {
+            "statusCode": "487",
+            "Description": "Request Terminated",
+            "headers": []
+        },
+        {
+            "statusCode": "488",
+            "Description": "Not Acceptable Here",
+            "headers": []
+        },
+        {
+            "statusCode": "500",
+            "Description": "Server Internal Error",
+            "headers": []
+        },
+        {
+            "statusCode": "501",
+            "Description": "Not Implemented",
+            "headers": []
+        },
+        {
+            "statusCode": "502",
+            "Description": "Bad Gateway",
+            "headers": []
+        },
+        {
+            "statusCode": "503",
+            "Description": "Service Unavailable",
+            "headers": [
+                {
+                    "sipHeaderName": "Retry-After",
+                    "sipHeaderValue": "5s"
+                }
+            ]
+        },
+        {
+            "statusCode": "505",
+            "Description": "Version Not Supported",
+            "headers": []
+        },
+        {
+            "statusCode": "513",
+            "Description": "Message Too Large",
+            "headers": []
+        },
+        {
+            "statusCode": "600",
+            "Description": "Busy Everywhere",
+            "headers": [
+                {
+                    "sipHeaderName": "Retry-After",
+                    "sipHeaderValue": "5s"
+                }
+            ]
+        }
+    ]
+}

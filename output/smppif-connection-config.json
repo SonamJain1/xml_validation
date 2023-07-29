@@ -1,0 +1,40 @@
+{
+    "smppConfigList": {
+        "pairConnectionMap": [
+            [
+                {
+                    "sourceIpAddress": "10.10.56.109",
+                    "systemId": "sysId1"
+                },
+                {
+                    "sourceIpAddress": "10.7.3.60",
+                    "destinationIpAddress": "10.10.56.109",
+                    "destinationIPPort": 4433,
+                    "localIpAddress": "10.7.3.60",
+                    "localBindPort": 4005,
+                    "tenant": "INDAT"
+                }
+            ],
+            [
+                {
+                    "sourceIpAddress": "10.10.56.109",
+                    "systemId": "sysId2"
+                },
+                {
+                    "sourceIpAddress": "10.7.3.60",
+                    "destinationIpAddress": "10.10.56.109",
+                    "destinationIPPort": 12346,
+                    "localIpAddress": "10.7.3.60",
+                    "localBindPort": 4006,
+                    "tenant": "INDAT"
+                }
+            ]
+        ]
+    },
+    "smppifServerPort": 4001,
+    "smppifServerIPAddr": "10.7.3.60",
+    "smppifProcessingQSize": 5000,
+    "transportRmiQueryPort": 9876,
+    "rxBufferSizeBytes": 800,
+    "rxBufferPoolSize": 1000
+}

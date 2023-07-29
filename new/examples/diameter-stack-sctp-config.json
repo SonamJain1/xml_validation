@@ -1,0 +1,23 @@
+{
+  "uri": "aaa://diameter-proxy:3868",
+  "messageTimeout": 30,
+  "closeAssociationGuardTimePeriod": 25,
+  "twInitWatchdogTimePeriod": 20,
+  "awaitCERGuardTimePeriod": 10,
+  "generateInvalidAnswers": false,
+  "enablePeerDynamicDiscovery": false,
+  "sctpAssociationTXQSize": 1000,
+  "sctpAssociationRXQSize": 1000,
+  "diameterServerQSize": 3000,
+  "numberOfSctpStreams": 1,
+  "rxBufferPoolSize" : 2500,
+  "queueLoggingFrequencyMinutes": 1,
+  "reconnectFailedPeerTimeSeconds": 10,
+  "enableSendInbandSecurityInCEA": false,
+  "queryItfPortNumber": 61432,
+  "readSctpBufferSize": 2097152,
+  "sendSctpBufferSize": 2097152,
+  "maxMessageStoreSize": 10000,
+  "transportType": "SCTP",
+  "productName": "EIDiameterFirewall"
+}

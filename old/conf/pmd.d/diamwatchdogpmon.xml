@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <var name="DIAMWATCHDOG_BASE" val="/opt/pmon_diamwatchdog" />
+            <!-- The watchdog pmon must run in the same, lockstep,
+                                - group as the Telesoft relay stack.  -->
+            <var name="PMON_GRP_NAME"     val="diameter" />
+            <var name="PMON_PROC_NAME"    val="diamwatchdogpmon" />
+        </variables>
+    </settings>
+
+    <group name="${PMON_GRP_NAME}" lockstep="true">
+        <processes>
+            <process name="${PMON_PROC_NAME}"/>
+        </processes>
+    </group>
+
+    <process name="${PMON_PROC_NAME}"
+             path="${DIAMWATCHDOG_BASE}/bin"
+             dir="${DIAMWATCHDOG_BASE}/bin"
+             cmd="./pmon_diamwatchdog">
+
+        <args>${DIAMWATCHDOG_BASE}/conf/pmon_diamwatchdog.cfg</args>
+
+        <envEntry var="LD_BIND_NOW" val="1"/>
+        <envEntry var="DB_PRINT" val="0"/>
+        <envEntry var="DB_COMPDEBUG" val="1"/>
+        <envEntry var="DLVL_pmon" val="0"/>
+        <envEntry var="DLOG_pmon" val="${DIAMWATCHDOG_BASE}/logs/pmon.log"/>
+        <envEntry var="SLOG_pmon" val="${DIAMWATCHDOG_BASE}/stats/pmon_stats.log"/>
+        <envEntry var="DCFG_pmon" val="${DIAMWATCHDOG_BASE}/conf/pmon_log.cfg"/>
+    </process>
+
+</pmd>
+

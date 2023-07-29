@@ -1,0 +1,41 @@
+# Key List IDs:
+# 1 == Tenant IPs/SubNets (IPv4)
+# 2 == Tenant IPs/SubNets (IPv6)
+# See https://docs.napatech.com/reader/n6XoTqngBo2P9~_Bd5lOww/kre_0wWC~fOMYLwPDlBh0w
+
+DefineMacro("GTPRxPort", "5")
+DefineMacro("GTPTxPort", "6")
+
+Setup[TxDescriptor=Dyn;TxPorts=GTPTxPort;TxIgnorePos=42;UseWL=True] = StreamId == 1
+
+# Tenant SubNets
+IPMatchList = IPv4Addr == {[FF.FF.FF.0]:[103.1.85.0]}
+#IPMatchList = IPv4Addr == {[FF.FF.FF.0]:[202.75.138.0]}
+#IPMatchList = IPV4Addr == {[FF.FF.FF.0]:[203.126.1.0]}
+
+# Just dest port needs to be 3386
+# according to section 9.1.1.1 of
+# 3GPP TS 09.60 V7.10.0 (2002-12)
+# OpCode 26 carried in GTP-C is an Error Indication:
+# (3GPP TS 09.60 V7.10.0 (2002-12) - section 7.5.11
+DefineMacro("IsGTPcV0", "((Data[DynOffset=DynOffUdpFrame; Offset=2; DataType=ByteStr2] == 3386) AND \
+                          (Data[DynOffset=DynOffUdpData; Offset=1; DataType=ByteStr1] != 0xFF) AND \
+                          (Data[DynOffset=DynOffUdpData; Offset=1; DataType=ByteStr1] != 26))")
+
+DefineMacro("NotGTPcV0", "((Data[DynOffset=DynOffUdpFrame; Offset=2; DataType=ByteStr2] != 3386) OR \
+                           (Data[DynOffset=DynOffUdpData; Offset=1; DataType=ByteStr1] == 0xFF) OR \
+                           (Data[DynOffset=DynOffUdpData; Offset=1; DataType=ByteStr1] == 26))")
+
+# Offset0 = IPv4 header
+# Offset1 = GTP packet start
+
+# A filter can match against up to 2 KeyLists.  NapaTech support ticket [NTS-1001778]
+Assign[StreamId=1;Descriptor=Dyn3,Offset0=Layer3Header[0],Offset1=Layer4Payload[0]] = Port == GTPRxPort AND \
+                                                                                      IPMatch == DstIP AND \
+                                                                                      Layer4Protocol == UDP AND \
+                                                                                      (TunnelType == GTPv1v2-C OR IsGTPcV0)
+
+Retransmit [SourcePort = GTPRxPort; DestinationPort = GTPTxPort] = IPMatch != DstIP OR \
+                                                                   Layer4Protocol != UDP OR \
+                                                                   (TunnelType != GTPv1v2-C AND NotGTPcV0)
+

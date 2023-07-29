@@ -1,0 +1,32 @@
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <!-- FIXME -->
+            <var name="GIF_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+    <group name="gtp" lockstep="true">
+        <processes>
+            <process name="gtpif"/>
+        </processes>
+    </group>
+
+    <process name="gtpif"
+             cmd="./runGIF.sh"
+             directory="${GIF_BASE}/bin/">
+
+        <args>../conf/gtpif.cfg</args>
+
+        <envEntry var="DLVL_gtpif" val="0"/>
+        <envEntry var="DLOG_gtpif" val="${GIF_BASE}/logs/gtpif.log"/>
+        <envEntry var="SLOG_gtpif" val="${GIF_BASE}/stats/gtpif_stats.log"/>
+        <envEntry var="LD_LIBRARY_PATH" val="${GIF_BASE}/lib64"/>
+    </process>
+
+</pmd>
+

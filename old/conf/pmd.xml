@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <!-- <settings snmphost="localhost"> -->
+    <!-- 
+    <settings snmpName="PMD"
+              snmpHost="mobileum-sfwapp169"
+              snmpVersion="2"
+              snmpSecurityName="snmpUser"
+              snmpSecurityLevel="auth_priv"
+              snmpAuthProtocol="MD5"
+              snmpPrivProtocol="AES192"
+              snmpAuthPassword="authPasswd"
+              snmpPrivPassword="privPasswd"
+              snmpEngineId="800002b804616263"
+              snmpContextName="EvolvedIntelligence_PMD"
+              snmpEngineContextId="800002b804646566">
+    -->
+    <settings>
+	<extensionconfigdir dir="/opt/engine/conf/pmd.d"/>
+
+    </settings>
+
+</pmd>

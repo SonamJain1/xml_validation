@@ -1,0 +1,27 @@
+<hazelcast-client xsi:schemaLocation="http://www.hazelcast.com/schema/client-config hazelcast-client-config-3.8.xsd"
+                  xmlns="http://www.hazelcast.com/schema/client-config"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <group>
+        <name>eiconfig</name>
+        <password>configconfig</password>
+    </group>
+
+    <network>
+        <cluster-members>
+               
+            <address>ansapp1:5701</address>
+
+            <address>ansapp2:5701</address>
+
+            <address>ansapp2:5701</address>
+
+        </cluster-members>
+        <aws enabled="false"/>
+    </network>
+
+    <properties>
+        <property name="hazelcast.logging.type">log4j</property>
+    </properties>
+
+</hazelcast-client>

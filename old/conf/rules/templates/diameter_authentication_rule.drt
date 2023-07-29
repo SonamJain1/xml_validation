@@ -1,0 +1,90 @@
+template header
+ruleType
+ruleId
+name
+version
+ruleCategory
+ruleSubcategory
+evaluationRule
+srcCondition
+applicationIdCondition
+commandCodeCondition
+diameterVersionCondition
+imsiCondition
+actionId
+ruleFlowGroup
+salience
+systemStartupPeriodSeconds
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import java.util.Objects;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.traffic.ApplicationIdCondition;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.traffic.CommandCodeCondition;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.traffic.DiameterVersionCondition;
+
+template "diameter_authentication_rule"
+
+rule "DiameterAuthentication_Rule_(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message (Note the rule is only applicable to requests)
+        DiameterMessage( isRequest() == true,
+                         (applicationId == @{applicationIdCondition} || @{applicationIdCondition} == ApplicationIdCondition.ANY),
+                         (commandCode == @{commandCodeCondition} || @{commandCodeCondition} == CommandCodeCondition.ANY),
+                         (version == @{diameterVersionCondition} || @{diameterVersionCondition} == DiameterVersionCondition.ANY),
+                         $originRealm : originRealm,
+                         $originHost : originHost,
+                         $destinationRealm : destinationRealm,
+                         $destinationHost : destinationHost,
+                         $tenant : tenant != null,
+                         $sub : subscriber != null)
+
+        // Only execute the rule if we have a current connection to an active subscriber store
+        eval ( $sub.getSubscriberStoreActive() )
+
+        // Check the address conditions
+        eval ( $tenant.getDiameterAddressValidator().matches("@{srcCondition}", $originRealm, $originHost) &&
+               $tenant.getDiameterAddressValidator().matches(SigFirewallDiameterConditionNames.TENANT, $destinationRealm, $destinationHost))
+
+        // Rule fails if:
+        //
+        //   1, The IMSI of the subscriber is known
+        //
+        //   2, Subscriber as identified by the IMSI is not a Tenant subscriber
+        //
+        // ...or...
+        //
+        //   3, The location of the subscriber as determined from the origination realm
+        //       of the message matches the last network from which a successful AIR/AIA
+        //       exchange was observed (if known)
+        //
+
+        eval ( $sub.getImsi() != null )
+
+        // Check the IMSI condition
+        eval ( $tenant.imsiMatches( "@{imsiCondition}", $sub.getImsi() ) )
+
+        eval ( (!$tenant.isTenant($sub.getImsi())) ||
+               ($sub.getAuthenticationOperator() != null && !Objects.equals($originRealm.getOperator(), $sub.getAuthenticationOperator())) ||
+               ($sub.currentAuthenticationOperatorUnknownAndLocationStoreOld( @{systemStartupPeriodSeconds} ) ) )
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( ! $results.getIsExplicitlyBlocked() )
+        {
+            modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                      "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule}) };
+        }
+    end
+
+end template

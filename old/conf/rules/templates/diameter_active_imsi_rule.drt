@@ -1,0 +1,55 @@
+template header
+ruleType
+ruleId
+name
+version
+ruleCategory
+ruleSubcategory
+evaluationRule
+applicationId
+commandCode
+actionId
+ruleFlowGroup
+salience
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+
+template "diameter_active_imsi_rule"
+
+rule "Diameter_Active_Imsi_Rule(@{ruleId}_@{row.rowNumber})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Diameter Message
+        $msg : DiameterMessage(
+                            isRequest() == true,
+                            applicationId == @{applicationId},
+                            commandCode == @{commandCode},
+                            $tenant : tenant != null,
+                            $tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true,
+                            $sub : subscriber != null )
+
+        // IMSI must be present, for the tenant, and an active IMSI for the message to be allowed
+        eval ( ($sub.getImsi() != null) &&
+            ((($tenant.isTenant($sub.getImsi()) && !$tenant.inActiveImsiRange($sub.getImsi()) )) ||
+            (!($tenant.isTenant($sub.getImsi())))))
+
+    then
+        // Only record the failure if the message is not already blocked
+        if ( $results.getIsAllowed() )
+        {
+            modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                      "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule}) };
+        }
+    end
+
+end template

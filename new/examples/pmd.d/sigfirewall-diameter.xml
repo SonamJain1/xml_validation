@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+
+    <settings>
+        <variables>
+            <var name="CFG_SRV_BASE" val="/opt/engine"/>
+        </variables>
+    </settings>
+
+
+    <group name="sigfirewalldiameter">
+        <processes>
+            <process name="sigfirewalldiameter"/>
+        </processes>
+    </group>
+
+    <process name="sigfirewalldiameter"
+             path="${CFG_SRV_BASE}/bin"
+             directory="${CFG_SRV_BASE}/bin"
+             cmd="sigfirewalldiameter" >
+        <envEntry var="SIG_FIREWALL_DIAMETER_JAVA_XMS_ARG"         val="1024m"/>
+        <envEntry var="SIG_FIREWALL_DIAMETER_JAVA_XMX_ARG"         val="1024m"/>
+        <envEntry var="SIG_FIREWALL_DIAMETER_BASE_DIR"             val="/opt/engine"/>
+        <envEntry var="SIG_FIREWALL_DIAMETER_NODE_ID"              val="app01"/>
+        <envEntry var="SIG_FIREWALL_DIAMETER_INSTANCE_ID"          val="01"/>
+        <envEntry var="SIG_FIREWALL_DIAMETER_EWOK_NODE_ID"         val="32221"/>
+        <envEntry var="SIG_FIREWALL_DIAMETER_RATE_LIMIT_HZ_PORT"   val="5712"/>
+        <envEntry var="SIG_FIREWALL_DIAMETER_TRUSTSTORE_PATH"    val="${JAVA8_HOME}/jre/lib/security/cacerts"/>
+    </process>
+
+</pmd>

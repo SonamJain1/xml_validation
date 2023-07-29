@@ -1,0 +1,33 @@
+<hazelcast
+        xmlns="http://www.hazelcast.com/schema/config"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.hazelcast.com/schema/config hazelcast-config-3.8.xsd">
+
+<!-- Uncomment if using authenication
+    <group>
+        <name>eiconfig</name>
+        <password>configconfig</password>
+    </group>
+-->
+
+    <network>
+        <port auto-increment="false">${SIG_FIREWALL_DIAMETER_RATE_LIMIT_HZ_PORT}</port>
+        <join>
+            <multicast enabled="false">
+                <multicast-group>localhost</multicast-group>
+                <multicast-port>54327</multicast-port>
+            </multicast>
+            <tcp-ip enabled="true">
+                <!-- FIXME - Add all known rate limiting nodes/ports here -->
+                <member>localhost:${SIG_FIREWALL_DIAMETER_RATE_LIMIT_HZ_PORT}</member>
+            </tcp-ip>
+            <aws enabled="false"/>
+        </join>
+    </network>
+
+    <properties>
+        <property name="hazelcast.logging.type">log4j</property>
+        <property name="hazelcast.health.monitoring.level">NOISY</property>
+    </properties>
+
+</hazelcast>

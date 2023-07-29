@@ -1,0 +1,66 @@
+template header
+ruleType
+ruleId
+name
+comment
+ruleCategory
+ruleSubcategory
+evaluationRule
+srcCondition
+dstCondition
+applicationIdCondition
+commandCodeCondition
+diameterVersionCondition
+actionId
+ruleFlowGroup
+salience
+applicabilityCriteria
+
+package com.evolvedintelligence.engine.sigfirewall.diameter.datamodel;
+
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.DiameterMessage;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.SigFirewallDiameterRuleResultSet;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.traffic.ApplicationIdCondition;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.traffic.CommandCodeCondition;
+import com.evolvedintelligence.engine.sigfirewall.diameter.datamodel.rule.traffic.DiameterVersionCondition;
+
+template "allow_traffic_rule"
+
+rule "DiameterAllowTraffic(@{ruleId})"
+agenda-group "@{ruleFlowGroup}"
+lock-on-active
+salience(@{salience})
+    when
+
+        // Rule Results
+        $results : SigFirewallDiameterRuleResultSet( )
+
+        // Does the Diameter Message match our traffic type condition
+        $msg : DiameterMessage( isRequest() == true,
+                                (applicationId == @{applicationIdCondition} || @{applicationIdCondition} == ApplicationIdCondition.ANY),
+                                (commandCode == @{commandCodeCondition} || @{commandCodeCondition} == CommandCodeCondition.ANY),
+                                (version == @{diameterVersionCondition} || @{diameterVersionCondition} == DiameterVersionCondition.ANY),
+                                $originRealm : originRealm,
+                                $originHost : originHost,
+                                $destinationRealm : destinationRealm,
+                                $destinationHost : destinationHost,
+                                $tenant : tenant != null,
+                                $tenant.applicable( "@{applicabilityCriteria}", originRealm, originHost, subscriber ) == true)
+
+    then
+
+        // Only record the first allow rule template that matches
+        if ( ! $results.getAllowTrafficRulePassed() )
+        {
+            // Run the relatively expensive source and destination conditions
+            if ( $tenant.getDiameterAddressValidator().matches("@{srcCondition}", $originRealm, $originHost) &&
+                 $tenant.getDiameterAddressValidator().matches("@{dstCondition}", $destinationRealm, $destinationHost))
+            {
+                // Need to add the long 'l' indicator to the actionId otherwise we get a Drools error
+                modify( $results )  { add("@{ruleId}", @{ruleType}, @{actionId}l,
+                                          "@{ruleCategory}", "@{ruleSubcategory}", @{evaluationRule}) };
+            }
+        }
+end
+
+end template

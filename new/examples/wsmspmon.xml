@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://www.evolved-intelligence.com/pmd/version2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.evolved-intelligence.com/pmd/version2 http://www.evolved-intelligence.com/pmd/schema/evolved-intelligence-pmd-v2.xsd">
+    <!-- Need schemaLocation or entityResolver is not invoked -->
+
+    <settings>
+        <variables>
+            <var name="WSMSPMON_BASE" val="/opt/pmon-wsms"/>
+        </variables>
+    </settings>
+
+    <group name="wsmspmon">
+        <processes>
+            <process name="wsmspmon"/>
+        </processes>
+    </group>
+
+    <process name="wsmspmon"
+             path="${WSMSPMON_BASE}/bin"
+             dir="${WSMSPMON_BASE}/bin"
+             cmd="./pmon_wsms">
+
+        <args>${WSMSPMON_BASE}/conf/pmon_wsms.cfg</args>
+
+        <envEntry var="LD_BIND_NOW" val="1"/>
+        <envEntry var="DB_PRINT" val="0"/>
+        <envEntry var="DB_COMPDEBUG" val="1"/>
+        <envEntry var="DLVL_pmon" val="0"/>
+        <envEntry var="DLOG_pmon" val="${WSMSPMON_BASE}/logs/pmon.log"/>
+        <envEntry var="DCFG_pmon" val="${WSMSPMON_BASE}/conf/pmon_log.cfg"/>
+    </process>
+
+</pmd>
